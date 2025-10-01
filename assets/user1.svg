@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="351pt" height="1104pt" viewBox="0.00 0.00 351.00 1104.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1100.4)">
+<title>CandidateFlow_Improved</title>
+<polygon fill="#f9f9f9" stroke="none" points="-4,4 -4,-1100.4 347,-1100.4 347,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_0_Setup</title>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="8,-561.8 8,-1088.4 202,-1088.4 202,-561.8 8,-561.8"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-1071.8" font-family="Arial" font-size="14.00">Phase 1: Candidate Setup</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_1_Assessment</title>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="23,-222 23,-531.8 335,-531.8 335,-222 23,-222"/>
+<text xml:space="preserve" text-anchor="middle" x="179" y="-515.2" font-family="Arial" font-size="14.00">Phase 2: Assessment Loop</text>
+</g>
+<!-- Start -->
+<g id="node1" class="node">
+<title>Start</title>
+<ellipse fill="#c8e6c9" stroke="black" stroke-width="1.5" cx="105" cy="-1037.6" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-1034" font-family="Arial" font-size="12.00">Start</text>
+</g>
+<!-- EnterCode -->
+<g id="node2" class="node">
+<title>EnterCode</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M157.03,-982.6C157.03,-982.6 52.97,-982.6 52.97,-982.6 46.97,-982.6 40.97,-976.6 40.97,-970.6 40.97,-970.6 40.97,-958.6 40.97,-958.6 40.97,-952.6 46.97,-946.6 52.97,-946.6 52.97,-946.6 157.03,-946.6 157.03,-946.6 163.03,-946.6 169.03,-952.6 169.03,-958.6 169.03,-958.6 169.03,-970.6 169.03,-970.6 169.03,-976.6 163.03,-982.6 157.03,-982.6"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-961" font-family="Arial" font-size="12.00">Enter Interview Code</text>
+</g>
+<!-- Start&#45;&gt;EnterCode -->
+<g id="edge1" class="edge">
+<title>Start-&gt;EnterCode</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M105,-1019.18C105,-1019.18 105,-995.09 105,-995.09"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="108.5,-995.09 105,-985.09 101.5,-995.09 108.5,-995.09"/>
+</g>
+<!-- UploadResume -->
+<g id="node3" class="node">
+<title>UploadResume</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M144.02,-909.6C144.02,-909.6 65.98,-909.6 65.98,-909.6 59.98,-909.6 53.98,-903.6 53.98,-897.6 53.98,-897.6 53.98,-885.6 53.98,-885.6 53.98,-879.6 59.98,-873.6 65.98,-873.6 65.98,-873.6 144.02,-873.6 144.02,-873.6 150.02,-873.6 156.02,-879.6 156.02,-885.6 156.02,-885.6 156.02,-897.6 156.02,-897.6 156.02,-903.6 150.02,-909.6 144.02,-909.6"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-888" font-family="Arial" font-size="12.00">Upload Resume</text>
+</g>
+<!-- EnterCode&#45;&gt;UploadResume -->
+<g id="edge2" class="edge">
+<title>EnterCode-&gt;UploadResume</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M105,-946.18C105,-946.18 105,-922.09 105,-922.09"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="108.5,-922.09 105,-912.09 101.5,-922.09 108.5,-922.09"/>
+</g>
+<!-- ExtractFields -->
+<g id="node4" class="node">
+<title>ExtractFields</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M151.02,-836.6C151.02,-836.6 58.98,-836.6 58.98,-836.6 52.98,-836.6 46.98,-830.6 46.98,-824.6 46.98,-824.6 46.98,-812.6 46.98,-812.6 46.98,-806.6 52.98,-800.6 58.98,-800.6 58.98,-800.6 151.02,-800.6 151.02,-800.6 157.02,-800.6 163.02,-806.6 163.02,-812.6 163.02,-812.6 163.02,-824.6 163.02,-824.6 163.02,-830.6 157.02,-836.6 151.02,-836.6"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-815" font-family="Arial" font-size="12.00">Auto-extract Fields</text>
+</g>
+<!-- UploadResume&#45;&gt;ExtractFields -->
+<g id="edge3" class="edge">
+<title>UploadResume-&gt;ExtractFields</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M105,-873.18C105,-873.18 105,-849.09 105,-849.09"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="108.5,-849.09 105,-839.09 101.5,-849.09 108.5,-849.09"/>
+</g>
+<!-- MissingFields -->
+<g id="node5" class="node">
+<title>MissingFields</title>
+<polygon fill="#fff9c4" stroke="black" stroke-width="1.5" points="105,-763.6 15.85,-745.6 105,-727.6 194.15,-745.6 105,-763.6"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-742" font-family="Arial" font-size="12.00">Fields Missing?</text>
+</g>
+<!-- ExtractFields&#45;&gt;MissingFields -->
+<g id="edge4" class="edge">
+<title>ExtractFields-&gt;MissingFields</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M105,-800.18C105,-800.18 105,-776.09 105,-776.09"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="108.5,-776.09 105,-766.09 101.5,-776.09 108.5,-776.09"/>
+</g>
+<!-- ManualFill -->
+<g id="node6" class="node">
+<title>ManualFill</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M127.35,-679.6C127.35,-679.6 28.65,-679.6 28.65,-679.6 22.65,-679.6 16.65,-673.6 16.65,-667.6 16.65,-667.6 16.65,-655.6 16.65,-655.6 16.65,-649.6 22.65,-643.6 28.65,-643.6 28.65,-643.6 127.35,-643.6 127.35,-643.6 133.35,-643.6 139.35,-649.6 139.35,-655.6 139.35,-655.6 139.35,-667.6 139.35,-667.6 139.35,-673.6 133.35,-679.6 127.35,-679.6"/>
+<text xml:space="preserve" text-anchor="middle" x="78" y="-658" font-family="Arial" font-size="12.00">Manually Fill Details</text>
+</g>
+<!-- MissingFields&#45;&gt;ManualFill -->
+<g id="edge5" class="edge">
+<title>MissingFields-&gt;ManualFill</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M78,-732.48C78,-732.48 78,-692.06 78,-692.06"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="81.5,-692.06 78,-682.06 74.5,-692.06 81.5,-692.06"/>
+<text xml:space="preserve" text-anchor="middle" x="99.62" y="-700.6" font-family="Arial" font-size="10.00">Yes</text>
+</g>
+<!-- ViewInstructions -->
+<g id="node7" class="node">
+<title>ViewInstructions</title>
+<polygon fill="#d1c4e9" stroke="black" stroke-width="1.5" points="163.02,-606.6 40.98,-606.6 40.98,-569.8 169.02,-569.8 169.02,-600.6 163.02,-606.6"/>
+<polyline fill="none" stroke="black" stroke-width="1.5" points="163.02,-606.6 163.02,-600.6"/>
+<polyline fill="none" stroke="black" stroke-width="1.5" points="169.02,-600.6 163.02,-600.6"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-591.8" font-family="Arial" font-size="12.00">Show Instructions</text>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-577.4" font-family="Arial" font-size="12.00">(Rules, Scoring, etc.)</text>
+</g>
+<!-- MissingFields&#45;&gt;ViewInstructions -->
+<g id="edge7" class="edge">
+<title>MissingFields-&gt;ViewInstructions</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M154.18,-737.14C154.18,-737.14 154.18,-618.96 154.18,-618.96"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="157.68,-618.96 154.18,-608.96 150.68,-618.96 157.68,-618.96"/>
+<text xml:space="preserve" text-anchor="middle" x="181.39" y="-658.6" font-family="Arial" font-size="10.00">No</text>
+</g>
+<!-- ManualFill&#45;&gt;ViewInstructions -->
+<g id="edge6" class="edge">
+<title>ManualFill-&gt;ViewInstructions</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M90.17,-643.08C90.17,-643.08 90.17,-619.04 90.17,-619.04"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="93.67,-619.04 90.17,-609.04 86.67,-619.04 93.67,-619.04"/>
+</g>
+<!-- AnswerQuestion -->
+<g id="node8" class="node">
+<title>AnswerQuestion</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M151.69,-499C151.69,-499 58.31,-499 58.31,-499 52.31,-499 46.31,-493 46.31,-487 46.31,-487 46.31,-474.2 46.31,-474.2 46.31,-468.2 52.31,-462.2 58.31,-462.2 58.31,-462.2 151.69,-462.2 151.69,-462.2 157.69,-462.2 163.69,-468.2 163.69,-474.2 163.69,-474.2 163.69,-487 163.69,-487 163.69,-493 157.69,-499 151.69,-499"/>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-484.2" font-family="Arial" font-size="12.00">Answer a Question</text>
+<text xml:space="preserve" text-anchor="middle" x="105" y="-469.8" font-family="Arial" font-size="12.00">(120s Timer)</text>
+</g>
+<!-- ViewInstructions&#45;&gt;AnswerQuestion -->
+<g id="edge8" class="edge">
+<title>ViewInstructions-&gt;AnswerQuestion</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M105,-569.46C105,-569.46 105,-511.3 105,-511.3"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="108.5,-511.3 105,-501.3 101.5,-511.31 108.5,-511.3"/>
+<text xml:space="preserve" text-anchor="middle" x="126.67" y="-542.8" font-family="Arial" font-size="10.00">Start Test</text>
+</g>
+<!-- CheckAbandon -->
+<g id="node9" class="node">
+<title>CheckAbandon</title>
+<polygon fill="#fff9c4" stroke="black" stroke-width="1.5" points="206,-425.2 84.62,-388.4 206,-351.6 327.38,-388.4 206,-425.2"/>
+<text xml:space="preserve" text-anchor="middle" x="206" y="-392" font-family="Arial" font-size="12.00">Tab Switched</text>
+<text xml:space="preserve" text-anchor="middle" x="206" y="-377.6" font-family="Arial" font-size="12.00">or Browser Closed?</text>
+</g>
+<!-- AnswerQuestion&#45;&gt;CheckAbandon -->
+<g id="edge9" class="edge">
+<title>AnswerQuestion-&gt;CheckAbandon</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M124.16,-461.5C124.16,-461.5 124.16,-412.8 124.16,-412.8"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="127.66,-412.8 124.16,-402.8 120.66,-412.8 127.66,-412.8"/>
+</g>
+<!-- CheckCompletion -->
+<g id="node10" class="node">
+<title>CheckCompletion</title>
+<polygon fill="#fff9c4" stroke="black" stroke-width="1.5" points="132,-303.6 31.3,-266.8 132,-230 232.7,-266.8 132,-303.6"/>
+<text xml:space="preserve" text-anchor="middle" x="132" y="-270.4" font-family="Arial" font-size="12.00">More Questions</text>
+<text xml:space="preserve" text-anchor="middle" x="132" y="-256" font-family="Arial" font-size="12.00">Left?</text>
+</g>
+<!-- CheckAbandon&#45;&gt;CheckCompletion -->
+<g id="edge10" class="edge">
+<title>CheckAbandon-&gt;CheckCompletion</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M158.66,-365.24C158.66,-365.24 158.66,-306.38 158.66,-306.38"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="162.16,-306.38 158.66,-296.38 155.16,-306.38 162.16,-306.38"/>
+<text xml:space="preserve" text-anchor="middle" x="196.68" y="-324.6" font-family="Arial" font-size="10.00">No (Answer Submitted)</text>
+</g>
+<!-- Abandoned -->
+<g id="node11" class="node">
+<title>Abandoned</title>
+<polygon fill="#ffcdd2" stroke="black" stroke-width="2" points="341.37,-109 212.63,-109 212.63,-73 341.37,-73 341.37,-109"/>
+<text xml:space="preserve" text-anchor="middle" x="277" y="-87.4" font-family="Arial" font-size="12.00">Interview Abandoned</text>
+</g>
+<!-- CheckAbandon&#45;&gt;Abandoned -->
+<g id="edge12" class="edge">
+<title>CheckAbandon-&gt;Abandoned</title>
+<path fill="none" stroke="#d32f2f" stroke-width="2" stroke-dasharray="5,2" d="M280.04,-373.65C280.04,-373.65 280.04,-122.96 280.04,-122.96"/>
+<polygon fill="#d32f2f" stroke="#d32f2f" stroke-width="2" points="283.54,-122.96 280.04,-112.96 276.54,-122.96 283.54,-122.96"/>
+<text xml:space="preserve" text-anchor="middle" x="284.62" y="-203" font-family="Arial" font-size="10.00" fill="#d32f2f">Yes</text>
+</g>
+<!-- CheckCompletion&#45;&gt;AnswerQuestion -->
+<g id="edge11" class="edge">
+<title>CheckCompletion-&gt;AnswerQuestion</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M65.47,-279.85C65.47,-279.85 65.47,-449.7 65.47,-449.7"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="61.97,-449.7 65.47,-459.7 68.97,-449.7 61.97,-449.7"/>
+<text xml:space="preserve" text-anchor="middle" x="57.62" y="-385.4" font-family="Arial" font-size="10.00">Yes</text>
+</g>
+<!-- FinalScore -->
+<g id="node12" class="node">
+<title>FinalScore</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M182.03,-182C182.03,-182 75.97,-182 75.97,-182 69.97,-182 63.97,-176 63.97,-170 63.97,-170 63.97,-158 63.97,-158 63.97,-152 69.97,-146 75.97,-146 75.97,-146 182.03,-146 182.03,-146 188.03,-146 194.03,-152 194.03,-158 194.03,-158 194.03,-170 194.03,-170 194.03,-176 188.03,-182 182.03,-182"/>
+<text xml:space="preserve" text-anchor="middle" x="129" y="-160.4" font-family="Arial" font-size="12.00">Calculate Final Score</text>
+</g>
+<!-- CheckCompletion&#45;&gt;FinalScore -->
+<g id="edge13" class="edge">
+<title>CheckCompletion-&gt;FinalScore</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M129,-230.56C129,-230.56 129,-194.46 129,-194.46"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="132.5,-194.46 129,-184.46 125.5,-194.46 132.5,-194.46"/>
+<text xml:space="preserve" text-anchor="middle" x="161.01" y="-203" font-family="Arial" font-size="10.00">No (All Done)</text>
+</g>
+<!-- End -->
+<g id="node14" class="node">
+<title>End</title>
+<ellipse fill="#c8e6c9" stroke="black" stroke-width="1.5" cx="197" cy="-18" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-14.4" font-family="Arial" font-size="12.00">End</text>
+</g>
+<!-- Abandoned&#45;&gt;End -->
+<g id="edge16" class="edge">
+<title>Abandoned-&gt;End</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M218.31,-72.2C218.31,-72.2 218.31,-41.69 218.31,-41.69"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="221.81,-41.69 218.31,-31.69 214.81,-41.69 221.81,-41.69"/>
+</g>
+<!-- ShowBreakdown -->
+<g id="node13" class="node">
+<title>ShowBreakdown</title>
+<path fill="#e3f2fd" stroke="black" stroke-width="1.5" d="M182.7,-109C182.7,-109 53.3,-109 53.3,-109 47.3,-109 41.3,-103 41.3,-97 41.3,-97 41.3,-85 41.3,-85 41.3,-79 47.3,-73 53.3,-73 53.3,-73 182.7,-73 182.7,-73 188.7,-73 194.7,-79 194.7,-85 194.7,-85 194.7,-97 194.7,-97 194.7,-103 188.7,-109 182.7,-109"/>
+<text xml:space="preserve" text-anchor="middle" x="118" y="-87.4" font-family="Arial" font-size="12.00">Display Score Breakdown</text>
+</g>
+<!-- FinalScore&#45;&gt;ShowBreakdown -->
+<g id="edge14" class="edge">
+<title>FinalScore-&gt;ShowBreakdown</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M129,-145.58C129,-145.58 129,-121.49 129,-121.49"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="132.5,-121.49 129,-111.49 125.5,-121.49 132.5,-121.49"/>
+</g>
+<!-- ShowBreakdown&#45;&gt;End -->
+<g id="edge15" class="edge">
+<title>ShowBreakdown-&gt;End</title>
+<path fill="none" stroke="black" stroke-width="1.2" d="M182.35,-72.58C182.35,-72.58 182.35,-45.51 182.35,-45.51"/>
+<polygon fill="black" stroke="black" stroke-width="1.2" points="185.85,-45.51 182.35,-35.51 178.85,-45.51 185.85,-45.51"/>
+</g>
+</g>
+</svg>

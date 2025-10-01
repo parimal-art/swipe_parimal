@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="390pt" height="622pt" viewBox="0.00 0.00 390.00 622.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 618.49)">
+<title>InterviewerFlow</title>
+<g id="clust1" class="cluster">
+<title>cluster_inputs</title>
+<polygon fill="none" stroke="#dfeaf6" stroke-dasharray="5,2" points="200.26,-462.91 200.26,-547.39 374.26,-547.39 374.26,-462.91 200.26,-462.91"/>
+<text xml:space="preserve" text-anchor="middle" x="287.26" y="-530.79" font-family="Times,serif" font-size="14.00">Question Input</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_outputs</title>
+<polygon fill="none" stroke="#e6f6ea" stroke-dasharray="5,2" points="11.26,-67.11 11.26,-173.19 293.26,-173.19 293.26,-67.11 11.26,-67.11"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-156.59" font-family="Times,serif" font-size="14.00">Outputs</text>
+</g>
+<!-- Start -->
+<g id="node1" class="node">
+<title>Start</title>
+<ellipse fill="#e8f4ff" stroke="black" cx="287.26" cy="-592.94" rx="27" ry="21.55"/>
+<text xml:space="preserve" text-anchor="middle" x="287.26" y="-589.64" font-family="Inter" font-size="11.00">Start</text>
+</g>
+<!-- QSet -->
+<g id="node2" class="node">
+<title>QSet</title>
+<path fill="#f7fbff" stroke="black" d="M353.86,-514.59C353.86,-514.59 220.65,-514.59 220.65,-514.59 214.65,-514.59 208.65,-508.59 208.65,-502.59 208.65,-502.59 208.65,-482.91 208.65,-482.91 208.65,-476.91 214.65,-470.91 220.65,-470.91 220.65,-470.91 353.86,-470.91 353.86,-470.91 359.86,-470.91 365.86,-476.91 365.86,-482.91 365.86,-482.91 365.86,-502.59 365.86,-502.59 365.86,-508.59 359.86,-514.59 353.86,-514.59"/>
+<text xml:space="preserve" text-anchor="middle" x="287.26" y="-496.05" font-family="Inter" font-size="11.00">Create Question Set</text>
+<text xml:space="preserve" text-anchor="middle" x="287.26" y="-482.85" font-family="Inter" font-size="11.00">(Manual form OR CSV upload)</text>
+</g>
+<!-- Start&#45;&gt;QSet -->
+<g id="edge1" class="edge">
+<title>Start-&gt;QSet</title>
+<path fill="none" stroke="black" d="M287.26,-571.2C287.26,-571.2 287.26,-526.3 287.26,-526.3"/>
+<polygon fill="black" stroke="black" points="290.76,-526.3 287.26,-516.3 283.76,-526.3 290.76,-526.3"/>
+</g>
+<!-- Validate -->
+<g id="node3" class="node">
+<title>Validate</title>
+<path fill="#fff7e6" stroke="black" d="M140.67,-435.77C140.67,-435.77 11.58,-400.77 11.58,-400.77 5.79,-399.2 5.79,-396.06 11.58,-394.49 11.58,-394.49 140.67,-359.49 140.67,-359.49 146.46,-357.92 158.05,-357.92 163.84,-359.49 163.84,-359.49 292.93,-394.49 292.93,-394.49 298.72,-396.06 298.72,-399.2 292.93,-400.77 292.93,-400.77 163.84,-435.77 163.84,-435.77 158.05,-437.34 146.46,-437.34 140.67,-435.77"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-400.63" font-family="Inter" font-size="10.00">Valid?</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-388.63" font-family="Inter" font-size="10.00">(≥2 Easy, ≥2 Medium, ≥2 Hard)</text>
+</g>
+<!-- QSet&#45;&gt;Validate -->
+<g id="edge2" class="edge">
+<title>QSet-&gt;Validate</title>
+<path fill="none" stroke="black" d="M256.58,-470.68C256.58,-470.68 256.58,-422.57 256.58,-422.57"/>
+<polygon fill="black" stroke="black" points="260.08,-422.57 256.58,-412.57 253.08,-422.57 260.08,-422.57"/>
+</g>
+<!-- Fail -->
+<g id="node4" class="node">
+<title>Fail</title>
+<path fill="#ffecec" stroke="black" d="M351.04,-315.55C351.04,-315.55 291.47,-315.55 291.47,-315.55 285.47,-315.55 279.47,-309.55 279.47,-303.55 279.47,-303.55 279.47,-283.87 279.47,-283.87 279.47,-277.87 285.47,-271.87 291.47,-271.87 291.47,-271.87 351.04,-271.87 351.04,-271.87 357.04,-271.87 363.04,-277.87 363.04,-283.87 363.04,-283.87 363.04,-303.55 363.04,-303.55 363.04,-309.55 357.04,-315.55 351.04,-315.55"/>
+<text xml:space="preserve" text-anchor="middle" x="321.26" y="-297.01" font-family="Inter" font-size="11.00">Validation Fail</text>
+<text xml:space="preserve" text-anchor="middle" x="321.26" y="-283.81" font-family="Inter" font-size="11.00">Fix &amp; Retry</text>
+</g>
+<!-- Validate&#45;&gt;Fail -->
+<g id="edge3" class="edge">
+<title>Validate-&gt;Fail</title>
+<path fill="none" stroke="black" d="M291.99,-394.17C291.99,-394.17 291.99,-327.11 291.99,-327.11"/>
+<polygon fill="black" stroke="black" points="295.49,-327.11 291.99,-317.11 288.49,-327.11 295.49,-327.11"/>
+<text xml:space="preserve" text-anchor="middle" x="257.76" y="-333.25" font-family="Times,serif" font-size="9.00">No</text>
+</g>
+<!-- Codes -->
+<g id="node5" class="node">
+<title>Codes</title>
+<path fill="#eef7ec" stroke="black" d="M229.28,-315.55C229.28,-315.55 75.23,-315.55 75.23,-315.55 69.23,-315.55 63.23,-309.55 63.23,-303.55 63.23,-303.55 63.23,-283.87 63.23,-283.87 63.23,-277.87 69.23,-271.87 75.23,-271.87 75.23,-271.87 229.28,-271.87 229.28,-271.87 235.28,-271.87 241.28,-277.87 241.28,-283.87 241.28,-283.87 241.28,-303.55 241.28,-303.55 241.28,-309.55 235.28,-315.55 229.28,-315.55"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-297.01" font-family="Inter" font-size="11.00">Generate Codes</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-283.81" font-family="Inter" font-size="11.00">(Interview Code + Dashboard Code)</text>
+</g>
+<!-- Validate&#45;&gt;Codes -->
+<g id="edge5" class="edge">
+<title>Validate-&gt;Codes</title>
+<path fill="none" stroke="black" d="M152.26,-355.96C152.26,-355.96 152.26,-327.49 152.26,-327.49"/>
+<polygon fill="black" stroke="black" points="155.76,-327.49 152.26,-317.49 148.76,-327.49 155.76,-327.49"/>
+<text xml:space="preserve" text-anchor="middle" x="159.25" y="-333.25" font-family="Times,serif" font-size="9.00">Yes</text>
+</g>
+<!-- Fail&#45;&gt;QSet -->
+<g id="edge4" class="edge">
+<title>Fail-&gt;QSet</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M333.78,-315.77C333.78,-315.77 333.78,-459.07 333.78,-459.07"/>
+<polygon fill="black" stroke="black" points="330.28,-459.07 333.78,-469.07 337.28,-459.07 330.28,-459.07"/>
+<text xml:space="preserve" text-anchor="middle" x="350.25" y="-394.93" font-family="Times,serif" font-size="9.00">Retry</text>
+</g>
+<!-- Share -->
+<g id="node6" class="node">
+<title>Share</title>
+<path fill="#f7fbff" stroke="black" d="M196.85,-240.87C196.85,-240.87 107.66,-240.87 107.66,-240.87 101.66,-240.87 95.66,-234.87 95.66,-228.87 95.66,-228.87 95.66,-209.19 95.66,-209.19 95.66,-203.19 101.66,-197.19 107.66,-197.19 107.66,-197.19 196.85,-197.19 196.85,-197.19 202.85,-197.19 208.85,-203.19 208.85,-209.19 208.85,-209.19 208.85,-228.87 208.85,-228.87 208.85,-234.87 202.85,-240.87 196.85,-240.87"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-222.33" font-family="Inter" font-size="11.00">Share Interview Code</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-209.13" font-family="Inter" font-size="11.00">(with candidates)</text>
+</g>
+<!-- Codes&#45;&gt;Share -->
+<g id="edge6" class="edge">
+<title>Codes-&gt;Share</title>
+<path fill="none" stroke="black" d="M152.26,-271.7C152.26,-271.7 152.26,-252.64 152.26,-252.64"/>
+<polygon fill="black" stroke="black" points="155.76,-252.64 152.26,-242.64 148.76,-252.64 155.76,-252.64"/>
+</g>
+<!-- Dashboard -->
+<g id="node7" class="node">
+<title>Dashboard</title>
+<polygon fill="#f0f7ff" stroke="black" points="279.73,-140.39 18.78,-140.39 18.78,-75.11 285.73,-75.11 285.73,-134.39 279.73,-140.39"/>
+<polyline fill="none" stroke="black" points="279.73,-140.39 279.73,-134.39"/>
+<polyline fill="none" stroke="black" points="285.73,-134.39 279.73,-134.39"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-122.75" font-family="Inter" font-size="10.00">Interviewer Dashboard</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-110.75" font-family="Inter" font-size="10.00">• Candidate List (Name, Email, Phone, Status, Final Score)</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-98.75" font-family="Inter" font-size="10.00">• Per-question Analysis (answers, matched keywords, scores)</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-86.75" font-family="Inter" font-size="10.00">• Stats (total, completed vs in-progress, avg score)</text>
+</g>
+<!-- Share&#45;&gt;Dashboard -->
+<g id="edge7" class="edge">
+<title>Share-&gt;Dashboard</title>
+<path fill="none" stroke="black" d="M152.26,-196.77C152.26,-196.77 152.26,-152.02 152.26,-152.02"/>
+<polygon fill="black" stroke="black" points="155.76,-152.02 152.26,-142.02 148.76,-152.02 155.76,-152.02"/>
+</g>
+<!-- End -->
+<g id="node8" class="node">
+<title>End</title>
+<ellipse fill="#e8f4ff" stroke="black" cx="152.26" cy="-21.55" rx="27" ry="21.55"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-18.25" font-family="Inter" font-size="11.00">End</text>
+</g>
+<!-- Dashboard&#45;&gt;End -->
+<g id="edge8" class="edge">
+<title>Dashboard-&gt;End</title>
+<path fill="none" stroke="black" d="M152.26,-74.67C152.26,-74.67 152.26,-55 152.26,-55"/>
+<polygon fill="black" stroke="black" points="155.76,-55 152.26,-45 148.76,-55 155.76,-55"/>
+</g>
+</g>
+</svg>
