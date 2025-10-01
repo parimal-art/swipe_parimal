@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// CHANGED: Import hooks from react-router-dom
 import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -25,9 +24,7 @@ import QuestionFeedback from './QuestionFeedback';
 import InterviewComplete from './InterviewComplete';
 import { Loader2, AlertCircle } from 'lucide-react';
 
-// CHANGED: Removed props from the function signature
 export default function CandidateFlow() {
-  // CHANGED: Get routing info from hooks
   const { interviewCode } = useParams();
   const navigate = useNavigate();
   
@@ -70,7 +67,6 @@ export default function CandidateFlow() {
         dispatch(
           updateCandidateStatusInDB({ candidateId, status: 'abandoned' })
         );
-        // CHANGED: Use navigate to go home
         navigate('/');
       }
     };
@@ -111,7 +107,6 @@ export default function CandidateFlow() {
               {error || 'The interview code you entered is not valid. Please check and try again.'}
             </p>
             <button
-              // CHANGED: Use navigate to go home
               onClick={() => navigate('/')}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
@@ -271,7 +266,6 @@ export default function CandidateFlow() {
         finalScore={finalScore}
         candidateInfo={candidateInfo}
         totalQuestions={selectedQuestions.length}
-        // CHANGED: Pass the navigate function to the final screen
         onNavigate={navigate}
       />
     );

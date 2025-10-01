@@ -1,11 +1,9 @@
-// src/store/interviewSlice.js
+
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../lib/supabase';
 
-// --- ASYNC THUNKS FOR DATABASE OPERATIONS ---
 
-// 1. Naya Question Set database mein create karne ke liye
 export const createQuestionSetInDB = createAsyncThunk(
   'interview/createQuestionSetInDB',
   async (questionSetData, { rejectWithValue }) => {
@@ -25,7 +23,6 @@ export const createQuestionSetInDB = createAsyncThunk(
   }
 );
 
-// 2. Interview code se questions fetch karne ke liye (Candidate ke liye)
 export const fetchQuestionSetByCode = createAsyncThunk(
   'interview/fetchQuestionSetByCode',
   async (interviewCode, { rejectWithValue }) => {
@@ -43,7 +40,6 @@ export const fetchQuestionSetByCode = createAsyncThunk(
   }
 );
 
-// 3. Dashboard code se saara data fetch karne ke liye (Interviewer ke liye)
 export const fetchDashboardDataByCode = createAsyncThunk(
   'interview/fetchDashboardDataByCode',
   async (dashboardCode, { rejectWithValue }) => {
@@ -70,7 +66,6 @@ export const fetchDashboardDataByCode = createAsyncThunk(
   }
 );
 
-// 4. Naya candidate database mein create karne ke liye
 export const createCandidateInDB = createAsyncThunk(
   'interview/createCandidateInDB',
   async (candidateData, { rejectWithValue }) => {
@@ -97,7 +92,6 @@ export const createCandidateInDB = createAsyncThunk(
   }
 );
 
-// 5. Candidate ka answer database mein submit karne ke liye
 export const submitAnswerInDB = createAsyncThunk(
   'interview/submitAnswerInDB',
   async (
@@ -122,7 +116,6 @@ export const submitAnswerInDB = createAsyncThunk(
   }
 );
 
-// 6. Interview complete hone par candidate ka status aur final score update karne ke liye
 export const updateCandidateOnCompletion = createAsyncThunk(
   'interview/updateCandidateOnCompletion',
   async ({ candidateId, score }, { rejectWithValue }) => {
@@ -141,9 +134,7 @@ export const updateCandidateOnCompletion = createAsyncThunk(
   }
 );
 
-// ====================================================================
-// 7. NEW THUNK: Candidate ka status update karne ke liye (e.g., 'abandoned')
-// ====================================================================
+
 export const updateCandidateStatusInDB = createAsyncThunk(
   'interview/updateCandidateStatusInDB',
   async ({ candidateId, status }, { rejectWithValue }) => {
@@ -162,7 +153,6 @@ export const updateCandidateStatusInDB = createAsyncThunk(
   }
 );
 
-// --- SLICE DEFINITION ---
 
 const initialState = {
   questionSets: {},
@@ -204,7 +194,7 @@ const interviewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // --- FULFILLED CASES (saare .addCase pehle aayenge) ---
+
 
       .addCase(createQuestionSetInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -273,9 +263,7 @@ const interviewSlice = createSlice({
             updatedCandidate.final_score;
         }
       })
-      // ====================================================================
-      // NEW REDUCER CASE: Handle state update for the new thunk
-      // ====================================================================
+
       .addCase(updateCandidateStatusInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
@@ -285,7 +273,6 @@ const interviewSlice = createSlice({
         }
       })
 
-      // --- GENERIC MATCHER CASES (saare .addMatcher ab end mein aayenge) ---
 
       .addMatcher(
         (action) => action.type.endsWith('/pending'),

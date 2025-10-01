@@ -10,9 +10,7 @@ import CandidateFlow from './components/CandidateFlow';
 import InterviewerDashboard from './components/InterviewerDashboard';
 
 function App() {
-  // 3. Removed the old useState and navigate function for state-based routing
 
-  // 4. Replaced the switch statement with a <Routes> configuration
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />

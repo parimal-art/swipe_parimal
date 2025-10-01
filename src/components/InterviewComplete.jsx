@@ -1,6 +1,5 @@
 import { Trophy, Award, TrendingUp, CheckCircle2 } from 'lucide-react';
 
-// 1. Added "onNavigate" to the list of props
 export default function InterviewComplete({ finalScore, candidateInfo, totalQuestions, onNavigate }) {
   const getScoreGrade = (score) => {
     if (score >= 9) return { grade: 'Excellent', color: 'text-emerald-600', bg: 'bg-emerald-50' };
@@ -79,9 +78,6 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
             </ul>
           </div>
 
-          {/* ================================== */}
-          {/* 2. NEWLY ADDED BUTTON            */}
-          {/* ================================== */}
           <div className="mt-8">
             <button
               onClick={() => onNavigate('/')}

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// CHANGED: Import hooks for routing
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -13,9 +12,7 @@ import {
 } from 'lucide-react';
 import { fetchDashboardDataByCode } from '../store/interviewSlice';
 
-// CHANGED: Removed props from function signature
 export default function InterviewerDashboard() {
-  // CHANGED: Get routing info from hooks
   const { dashboardCode } = useParams();
   const navigate = useNavigate();
   
@@ -60,7 +57,7 @@ export default function InterviewerDashboard() {
               {error || 'No question set found for this dashboard code.'}
             </p>
             <button
-              onClick={() => navigate('/')} // CHANGED: Use navigate
+              onClick={() => navigate('/')} 
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               Back to Home
@@ -241,7 +238,7 @@ export default function InterviewerDashboard() {
             </p>
           </div>
           <button
-            onClick={() => navigate('/')} // CHANGED: use navigate
+            onClick={() => navigate('/')} 
             className="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
           >
             Back to Home

@@ -1,7 +1,7 @@
-// src/components/ResumeUpload.jsx
 
-import { useState, useEffect } from 'react'; // Import useEffect
-import { Upload, AlertCircle, FileText, Loader2 } from 'lucide-react'; // Import Loader2 for a spinner
+
+import { useState, useEffect } from 'react'; 
+import { Upload, AlertCircle, FileText, Loader2 } from 'lucide-react'; 
 import { parseResumeText } from '../utils/evaluation';
 import * as mammoth from 'mammoth';
 
@@ -17,7 +17,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
   });
   const [error, setError] = useState(null);
 
-  // This useEffect hook will run the parseFile function automatically when a file is selected
   useEffect(() => {
     if (file) {
       parseFile();
@@ -28,7 +27,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
-    // Reset state for new file upload
     setError(null);
     setManualEntry(false);
     setParsedData(null);
@@ -44,7 +42,7 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
       return;
     }
 
-    setFile(selectedFile); // Setting the file here triggers the useEffect
+    setFile(selectedFile); 
   };
 
   const getTextFromDocx = async (docxFile) => {
@@ -88,8 +86,7 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
         email: parsed.email || '',
         phone: parsed.phone || '',
       });
-      
-      // Always go to manual entry/verification step
+
       setManualEntry(true);
 
     } catch (err) {
@@ -142,7 +139,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
             </div>
           )}
 
-          {/* Initial Upload View */}
           {!file && !manualEntry && (
             <div className="border-2 border-dashed border-slate-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
               <input
@@ -160,7 +156,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
             </div>
           )}
           
-          {/* View while file is selected and parsing */}
           {file && parsing && (
             <div className="space-y-4">
               <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-lg">
@@ -174,7 +169,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
             </div>
           )}
 
-          {/* View for manual entry or verification */}
           {manualEntry && (
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div>
@@ -200,7 +194,6 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
             </form>
           )}
 
-          {/* Button to skip upload */}
           {!file && !manualEntry && (
             <button onClick={() => setManualEntry(true)} className="w-full mt-4 text-blue-600 hover:text-blue-700 font-medium">
               Skip resume upload and enter details manually

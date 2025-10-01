@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// CHANGED: Import the useNavigate hook
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Upload, CheckCircle, AlertCircle, ListChecks, Loader2 } from 'lucide-react';
 import Papa from 'papaparse';
@@ -8,9 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createQuestionSetInDB } from '../store/interviewSlice';
 import { generateCode } from '../utils/evaluation';
 
-// CHANGED: Removed onNavigate from the component's props
 export default function CreateQuestions() {
-  // CHANGED: Get the navigate function from the hook
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, error: reduxError } = useSelector((state) => state.interview);
@@ -174,14 +171,12 @@ export default function CreateQuestions() {
 
             <div className="mt-8 flex gap-4">
               <button
-                // CHANGED: Navigate to the new URL path
                 onClick={() => navigate(`/dashboard/${codes.dashboardCode}`)}
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
                 Go to Dashboard
               </button>
               <button
-                // CHANGED: Navigate to the new URL path
                 onClick={() => navigate('/')}
                 className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
@@ -335,7 +330,6 @@ export default function CreateQuestions() {
               )}
             </button>
             <button 
-              // CHANGED: Navigate to the new URL path
               onClick={() => navigate('/')} 
               className="bg-slate-300 hover:bg-slate-400 text-slate-700 font-semibold py-3 px-6 rounded-lg transition-colors"
             >

@@ -1,10 +1,9 @@
-// src/components/QuestionFeedback.jsx
+
 
 export default function QuestionFeedback({ evaluation, question, onNext }) {
-  // We only need the score from the evaluation object now.
+
   const { score } = evaluation;
 
-  // Determines the color of the score text (green, amber, or red).
   const getScoreColor = () => {
     const percentage = (score / (question.maxScore + 1)) * 100;
     if (percentage >= 80) return 'text-emerald-600';
@@ -12,7 +11,6 @@ export default function QuestionFeedback({ evaluation, question, onNext }) {
     return 'text-red-600';
   };
 
-  // Determines the background color of the score card.
   const getScoreBackground = () => {
     const percentage = (score / (question.maxScore + 1)) * 100;
     if (percentage >= 80) return 'bg-emerald-50 border-emerald-200';
@@ -28,7 +26,6 @@ export default function QuestionFeedback({ evaluation, question, onNext }) {
             Answer Evaluation
           </h2>
 
-          {/* This block displays the score */}
           <div className={`border rounded-lg p-8 mb-8 ${getScoreBackground()}`}>
             <p className="text-sm text-slate-600 mb-2">Your Score</p>
             <p className={`text-7xl font-bold ${getScoreColor()}`}>
@@ -42,8 +39,6 @@ export default function QuestionFeedback({ evaluation, question, onNext }) {
           <p className="text-slate-600 mb-8">
             Your response has been saved. Click the button below to proceed.
           </p>
-
-          {/* This button takes the user to the next question */}
           <button
             onClick={onNext}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
