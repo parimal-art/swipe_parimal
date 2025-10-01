@@ -11,7 +11,7 @@ This implementation runs **entirely in the browser (frontend-only)**. No backend
 ---
 ### Candidate Flow
 
-![Candidate flow](https://drive.google.com/file/d/1fS4JW4gJ2rGnpCPhfcb6EpZbHGXfFb-n/view?usp=drive_link)
+![Candidate flow](assets/user2.svg)
 
 The candidate journey is designed to be seamless and straightforward, from receiving the interview code to completing the assessment.
 
@@ -30,6 +30,8 @@ The candidate journey is designed to be seamless and straightforward, from recei
 * **Final Score**: Upon completion, a final, weighted score is displayed along with a performance breakdown.
 -----
 ### Interviewer Flow
+
+![Interviewer flow](assets/interviewer.svg)
 
 The platform provides robust tools for interviewers to create, manage, and analyze interviews.
 
@@ -61,6 +63,8 @@ The platform provides robust tools for interviewers to create, manage, and analy
 ---
 
 ## ⚙️ Evaluation Logic
+
+![Evaluation logic](assets/marks.svg)
 
 ### Normalization
 
