@@ -1,23 +1,30 @@
 // src/components/HomePage.jsx
 
 import { useState } from 'react';
+// CHANGED: Import the useNavigate hook from react-router-dom
+import { useNavigate } from 'react-router-dom';
 import { Users, ClipboardList, LayoutDashboard, CheckCircle } from 'lucide-react';
 
-export default function HomePage({ onNavigate }) {
+// CHANGED: Removed onNavigate from the component's props
+export default function HomePage() {
+  // CHANGED: Get the navigate function from the hook
+  const navigate = useNavigate();
   const [interviewCode, setInterviewCode] = useState('');
   const [dashboardCode, setDashboardCode] = useState('');
 
   const handleCandidateStart = (e) => {
     e.preventDefault();
     if (interviewCode.trim()) {
-      onNavigate('candidate', { interviewCode: interviewCode.toUpperCase() });
+      // CHANGED: Navigate to the new URL path
+      navigate(`/interview/${interviewCode.toUpperCase()}`);
     }
   };
 
   const handleInterviewerAccess = (e) => {
     e.preventDefault();
     if (dashboardCode.trim()) {
-      onNavigate('dashboard', { dashboardCode: dashboardCode.toUpperCase() });
+      // CHANGED: Navigate to the new URL path
+      navigate(`/dashboard/${dashboardCode.toUpperCase()}`);
     }
   };
 
@@ -35,7 +42,7 @@ export default function HomePage({ onNavigate }) {
 
         <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           
-          {/* Box 1: For Candidates - Updated with flexbox for alignment */}
+          {/* Box 1: For Candidates */}
           <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow flex flex-col">
             <div className="flex-grow">
               <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
@@ -72,7 +79,7 @@ export default function HomePage({ onNavigate }) {
             </button>
           </div>
 
-          {/* Box 2: Create Question Set - Updated with flexbox for alignment */}
+          {/* Box 2: Create Question Set */}
           <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow flex flex-col">
             <div className="flex-grow">
               <div className="flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-6">
@@ -100,14 +107,15 @@ export default function HomePage({ onNavigate }) {
               </div>
             </div>
             <button
-              onClick={() => onNavigate('create-questions')}
+              // CHANGED: Navigate to the new URL path
+              onClick={() => navigate('/create-questions')}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors mt-6"
             >
               Create Question Set
             </button>
           </div>
 
-          {/* Box 3: Access Dashboard - Updated with flexbox for alignment */}
+          {/* Box 3: Access Dashboard */}
           <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow flex flex-col">
             <div className="flex-grow">
               <div className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-6">

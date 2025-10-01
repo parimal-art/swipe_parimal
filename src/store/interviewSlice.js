@@ -60,10 +60,12 @@ export const fetchDashboardDataByCode = createAsyncThunk(
         .select('*, answers(*)')
         .eq('interview_code', questionSet.interview_code);
       if (candidatesError) throw candidatesError;
-      
+
       return { questionSet, candidates };
     } catch (error) {
-      return rejectWithValue('Invalid Dashboard Code or failed to fetch data.');
+      return rejectWithValue(
+        'Invalid Dashboard Code or failed to fetch data.'
+      );
     }
   }
 );
@@ -98,7 +100,10 @@ export const createCandidateInDB = createAsyncThunk(
 // 5. Candidate ka answer database mein submit karne ke liye
 export const submitAnswerInDB = createAsyncThunk(
   'interview/submitAnswerInDB',
-  async ({ candidateId, questionId, answer, matchedKeywords, score }, { rejectWithValue }) => {
+  async (
+    { candidateId, questionId, answer, matchedKeywords, score },
+    { rejectWithValue }
+  ) => {
     try {
       const { data, error } = await supabase.from('answers').insert([
         {
@@ -136,6 +141,26 @@ export const updateCandidateOnCompletion = createAsyncThunk(
   }
 );
 
+// ====================================================================
+// 7. NEW THUNK: Candidate ka status update karne ke liye (e.g., 'abandoned')
+// ====================================================================
+export const updateCandidateStatusInDB = createAsyncThunk(
+  'interview/updateCandidateStatusInDB',
+  async ({ candidateId, status }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from('candidates')
+        .update({ status: status })
+        .eq('id', candidateId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 // --- SLICE DEFINITION ---
 
@@ -174,45 +199,49 @@ const interviewSlice = createSlice({
       delete state.sessions[sessionId];
     },
     clearError: (state) => {
-        state.error = null;
-    }
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
       // --- FULFILLED CASES (saare .addCase pehle aayenge) ---
-      
+
       .addCase(createQuestionSetInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { interviewCode, dashboardCode, questions } = action.payload;
-        state.questionSets[interviewCode] = { interviewCode, dashboardCode, questions };
+        state.questionSets[interviewCode] = {
+          interviewCode,
+          dashboardCode,
+          questions,
+        };
       })
       .addCase(fetchQuestionSetByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const questionSet = action.payload;
         if (questionSet) {
           state.questionSets[questionSet.interview_code] = {
-              interviewCode: questionSet.interview_code,
-              dashboardCode: questionSet.dashboard_code,
-              questions: questionSet.questions,
+            interviewCode: questionSet.interview_code,
+            dashboardCode: questionSet.dashboard_code,
+            questions: questionSet.questions,
           };
         }
       })
       .addCase(fetchDashboardDataByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { questionSet, candidates } = action.payload;
-        
+
         state.questionSets[questionSet.interview_code] = {
-            interviewCode: questionSet.interview_code,
-            dashboardCode: questionSet.dashboard_code,
-            questions: questionSet.questions,
+          interviewCode: questionSet.interview_code,
+          dashboardCode: questionSet.dashboard_code,
+          questions: questionSet.questions,
         };
-        
+
         state.candidates = {};
-        candidates.forEach(candidate => {
-            state.candidates[candidate.id] = {
-              ...candidate,
-              finalScore: candidate.final_score 
-            };
+        candidates.forEach((candidate) => {
+          state.candidates[candidate.id] = {
+            ...candidate,
+            finalScore: candidate.final_score,
+          };
         });
       })
       .addCase(createCandidateInDB.fulfilled, (state, action) => {
@@ -228,18 +257,31 @@ const interviewSlice = createSlice({
         state.status = 'succeeded';
         const { candidateId, ...answerData } = action.payload;
         if (state.candidates[candidateId]) {
-            if(!state.candidates[candidateId].answers) {
-                state.candidates[candidateId].answers = [];
-            }
-            state.candidates[candidateId].answers.push(answerData);
+          if (!state.candidates[candidateId].answers) {
+            state.candidates[candidateId].answers = [];
+          }
+          state.candidates[candidateId].answers.push(answerData);
         }
       })
       .addCase(updateCandidateOnCompletion.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
-        if(state.candidates[updatedCandidate.id]) {
-            state.candidates[updatedCandidate.id].status = updatedCandidate.status;
-            state.candidates[updatedCandidate.id].finalScore = updatedCandidate.final_score;
+        if (state.candidates[updatedCandidate.id]) {
+          state.candidates[updatedCandidate.id].status =
+            updatedCandidate.status;
+          state.candidates[updatedCandidate.id].finalScore =
+            updatedCandidate.final_score;
+        }
+      })
+      // ====================================================================
+      // NEW REDUCER CASE: Handle state update for the new thunk
+      // ====================================================================
+      .addCase(updateCandidateStatusInDB.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const updatedCandidate = action.payload;
+        if (state.candidates[updatedCandidate.id]) {
+          state.candidates[updatedCandidate.id].status =
+            updatedCandidate.status;
         }
       })
 
@@ -262,6 +304,7 @@ const interviewSlice = createSlice({
   },
 });
 
-export const { createSession, updateSession, deleteSession, clearError } = interviewSlice.actions;
+export const { createSession, updateSession, deleteSession, clearError } =
+  interviewSlice.actions;
 
 export default interviewSlice.reducer;

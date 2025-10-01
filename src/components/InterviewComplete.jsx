@@ -1,6 +1,7 @@
 import { Trophy, Award, TrendingUp, CheckCircle2 } from 'lucide-react';
 
-export default function InterviewComplete({ finalScore, candidateInfo, totalQuestions }) {
+// 1. Added "onNavigate" to the list of props
+export default function InterviewComplete({ finalScore, candidateInfo, totalQuestions, onNavigate }) {
   const getScoreGrade = (score) => {
     if (score >= 9) return { grade: 'Excellent', color: 'text-emerald-600', bg: 'bg-emerald-50' };
     if (score >= 7) return { grade: 'Good', color: 'text-blue-600', bg: 'bg-blue-50' };
@@ -58,7 +59,7 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
             <h3 className="font-semibold text-blue-900 mb-3">
               What Happens Next?
             </h3>
@@ -78,25 +79,18 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
             </ul>
           </div>
 
-          <div className="bg-slate-50 rounded-lg p-6">
-            <h3 className="font-semibold text-slate-900 mb-3">
-              Your Information
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600">Name:</span>
-                <span className="font-medium text-slate-900">{candidateInfo.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Email:</span>
-                <span className="font-medium text-slate-900">{candidateInfo.email}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Phone:</span>
-                <span className="font-medium text-slate-900">{candidateInfo.phone}</span>
-              </div>
-            </div>
+          {/* ================================== */}
+          {/* 2. NEWLY ADDED BUTTON            */}
+          {/* ================================== */}
+          <div className="mt-8">
+            <button
+              onClick={() => onNavigate('/')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
+              Back to Home
+            </button>
           </div>
+
         </div>
 
         <div className="text-center mt-6 text-slate-500 text-sm">

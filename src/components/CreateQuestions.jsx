@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+// CHANGED: Import the useNavigate hook
+import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Upload, CheckCircle, AlertCircle, ListChecks, Loader2 } from 'lucide-react';
 import Papa from 'papaparse';
 import { v4 as uuidv4 } from 'uuid';
-// Import the new async thunk instead of the old action
 import { createQuestionSetInDB } from '../store/interviewSlice';
 import { generateCode } from '../utils/evaluation';
 
-export default function CreateQuestions({ onNavigate }) {
+// CHANGED: Removed onNavigate from the component's props
+export default function CreateQuestions() {
+  // CHANGED: Get the navigate function from the hook
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Get the status from the Redux store to handle loading UI
   const { status, error: reduxError } = useSelector((state) => state.interview);
 
   const [questions, setQuestions] = useState([]);
@@ -20,7 +23,6 @@ export default function CreateQuestions({ onNavigate }) {
     maxScore: 10,
   });
   const [codes, setCodes] = useState(null);
-  // This error state will now handle both form validation and server errors
   const [error, setError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState('');
 
@@ -101,9 +103,8 @@ export default function CreateQuestions({ onNavigate }) {
     e.target.value = '';
   };
 
-  // *** MAJOR CHANGE: Updated submission logic ***
   const validateAndSubmit = async () => {
-    setError(''); // Clear previous errors
+    setError('');
     const easyCount = questions.filter(q => q.difficulty === 'easy').length;
     const mediumCount = questions.filter(q => q.difficulty === 'medium').length;
     const hardCount = questions.filter(q => q.difficulty === 'hard').length;
@@ -117,29 +118,23 @@ export default function CreateQuestions({ onNavigate }) {
     const dashboardCode = generateCode(8);
 
     try {
-      // Dispatch the new async thunk and wait for it to complete
       await dispatch(
         createQuestionSetInDB({
           interviewCode,
           dashboardCode,
           questions,
         })
-      ).unwrap(); // .unwrap() will throw an error if the thunk is rejected
+      ).unwrap();
 
-      // If the above line succeeds, it means data was saved to DB.
-      // Now, show the success screen with the codes.
       setCodes({ interviewCode, dashboardCode });
       setUploadSuccess('');
 
     } catch (rejectedValueOrSerializedError) {
-      // If .unwrap() throws, it means the thunk failed.
-      // Set an error message to show the user.
       setError(reduxError || 'An unknown error occurred while saving. Please try again.');
     }
   };
 
   if (codes) {
-    // This success screen part remains the same
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
         <div className="max-w-2xl mx-auto">
@@ -179,13 +174,15 @@ export default function CreateQuestions({ onNavigate }) {
 
             <div className="mt-8 flex gap-4">
               <button
-                onClick={() => onNavigate('dashboard', { dashboardCode: codes.dashboardCode })}
+                // CHANGED: Navigate to the new URL path
+                onClick={() => navigate(`/dashboard/${codes.dashboardCode}`)}
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
                 Go to Dashboard
               </button>
               <button
-                onClick={() => onNavigate('home')}
+                // CHANGED: Navigate to the new URL path
+                onClick={() => navigate('/')}
                 className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
                 Back to Home
@@ -197,7 +194,6 @@ export default function CreateQuestions({ onNavigate }) {
     );
   }
 
-  // The main form UI
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -207,8 +203,6 @@ export default function CreateQuestions({ onNavigate }) {
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-
-            {/* Left Column: Forms */}
             <div className="lg:col-span-3">
               <div className="mb-8">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -226,7 +220,6 @@ export default function CreateQuestions({ onNavigate }) {
                 </div>
               </div>
 
-              {/* Display both form errors and server errors */}
               {error && (
                 <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -272,9 +265,7 @@ export default function CreateQuestions({ onNavigate }) {
               </div>
             </div>
 
-            {/* Right Column: Question List (no changes here) */}
             <div className="lg:col-span-2">
-               {/* ... this whole section is unchanged ... */}
                <div className="bg-slate-50 rounded-lg p-6 sticky top-8">
                 <h3 className="font-semibold text-slate-900 mb-4">Your Questions ({questions.length})</h3>
                 <div className="space-y-2 mb-4">
@@ -285,7 +276,7 @@ export default function CreateQuestions({ onNavigate }) {
                       <div key={diff} className="text-sm flex justify-between items-center">
                         <span className="capitalize font-medium">{diff}:</span>
                         <span className={`font-semibold ${color}`}>
-                          {count} {count >= 2 ? <CheckCircle className="inline w-4 h-4 ml-1"/> : `(minimum 2 required)`}
+                           {count} {count >= 2 ? <CheckCircle className="inline w-4 h-4 ml-1"/> : `(minimum 2 required)`}
                         </span>
                       </div>
                     );
@@ -328,9 +319,7 @@ export default function CreateQuestions({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom Buttons */}
           <div className="flex gap-4 border-t border-slate-200 pt-6 mt-8">
-            {/* *** MAJOR CHANGE: Updated button with loading state *** */}
             <button
               onClick={validateAndSubmit}
               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
@@ -345,7 +334,11 @@ export default function CreateQuestions({ onNavigate }) {
                 'Create Question Set'
               )}
             </button>
-            <button onClick={() => onNavigate('home')} className="bg-slate-300 hover:bg-slate-400 text-slate-700 font-semibold py-3 px-6 rounded-lg transition-colors">
+            <button 
+              // CHANGED: Navigate to the new URL path
+              onClick={() => navigate('/')} 
+              className="bg-slate-300 hover:bg-slate-400 text-slate-700 font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
               Cancel
             </button>
           </div>
