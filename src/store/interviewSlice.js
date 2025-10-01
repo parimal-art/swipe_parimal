@@ -1,3 +1,5 @@
+// src/store/interviewSlice.js
+
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -11,10 +13,9 @@ const interviewSlice = createSlice({
   initialState,
   reducers: {
     createQuestionSet: (state, action) => {
-      const { interviewCode, interviewerId, dashboardCode, questions } = action.payload;
+      const { interviewCode, dashboardCode, questions } = action.payload;
       state.questionSets[interviewCode] = {
         interviewCode,
-        interviewerId,
         dashboardCode,
         questions,
         createdAt: new Date().toISOString(),
