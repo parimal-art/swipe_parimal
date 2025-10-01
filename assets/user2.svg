@@ -1,15 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="351pt" height="1104pt" viewBox="0.00 0.00 351.00 1104.00">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1100.4)">
-<title>CandidateFlow_Improved</title>
-<polygon fill="#f9f9f9" stroke="none" points="-4,4 -4,-1100.4 347,-1100.4 347,4 -4,4"/>
+<title>CandidateFlow_Final</title>
 <g id="clust1" class="cluster">
 <title>cluster_0_Setup</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="8,-561.8 8,-1088.4 202,-1088.4 202,-561.8 8,-561.8"/>
+<polygon fill="none" stroke="gray" points="8,-561.8 8,-1088.4 202,-1088.4 202,-561.8 8,-561.8"/>
 <text xml:space="preserve" text-anchor="middle" x="105" y="-1071.8" font-family="Arial" font-size="14.00">Phase 1: Candidate Setup</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_1_Assessment</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="23,-222 23,-531.8 335,-531.8 335,-222 23,-222"/>
+<polygon fill="none" stroke="gray" points="23,-222 23,-531.8 335,-531.8 335,-222 23,-222"/>
 <text xml:space="preserve" text-anchor="middle" x="179" y="-515.2" font-family="Arial" font-size="14.00">Phase 2: Assessment Loop</text>
 </g>
 <!-- Start -->
