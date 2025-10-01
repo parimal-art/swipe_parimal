@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+// Import all the new async thunks
 import {
-  createCandidate,
-  updateCandidateStatus,
-  submitAnswer,
-  updateFinalScore,
+  fetchQuestionSetByCode,
+  createCandidateInDB,
+  submitAnswerInDB,
+  updateCandidateOnCompletion,
   createSession,
   updateSession,
   deleteSession,
@@ -20,14 +21,16 @@ import InterviewInstructions from './InterviewInstructions';
 import InterviewQuestion from './InterviewQuestion';
 import QuestionFeedback from './QuestionFeedback';
 import InterviewComplete from './InterviewComplete';
+import { Loader2, AlertCircle } from 'lucide-react'; // For loading/error UI
 
 export default function CandidateFlow({ interviewCode, onNavigate }) {
   const dispatch = useDispatch();
-  const questionSets = useSelector((state) => state.interview.questionSets);
-  const sessions = useSelector((state) => state.interview.sessions);
+  
+  // Get entire state objects to access status and error
+  const { questionSets, sessions, candidates, status, error } = useSelector((state) => state.interview);
 
   const [stage, setStage] = useState('resume');
-  const [candidateId, setCandidateId] = useState(null);
+  const [candidateId, setCandidateId] = useState(null); // This will be the ID from the database
   const [sessionId, setSessionId] = useState(null);
   const [candidateInfo, setCandidateInfo] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
@@ -35,39 +38,36 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
   const [currentEvaluation, setCurrentEvaluation] = useState(null);
   const [allAnswers, setAllAnswers] = useState([]);
 
-  const questionSet = questionSets[interviewCode];
+  // The selector now might not have the data initially, we fetch it in useEffect
+  const questionSet = questionSets[interviewCode.toUpperCase()];
+  const candidate = candidates[candidateId];
 
+  // *** MAJOR CHANGE: Fetch question set from DB when component loads ***
   useEffect(() => {
-    const existingSession = Object.values(sessions).find(
-      (s) => s.candidateId === candidateId
-    );
-
-    if (existingSession && stage === 'resume') {
-      setSessionId(existingSession.sessionId);
-      setSelectedQuestions(existingSession.questions);
-      setCurrentQuestionIndex(existingSession.currentQuestionIndex);
-      setStage('question');
-    }
-  }, [candidateId, sessions]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (stage === 'question' && candidateId) {
-        dispatch(updateCandidateStatus({ candidateId, status: 'abandoned' }));
-        if (sessionId) {
-          dispatch(deleteSession({ sessionId }));
-        }
+    if (interviewCode) {
+      // Fetch the data only if it's not already in the state
+      if (!questionSet) {
+        dispatch(fetchQuestionSetByCode(interviewCode));
       }
+    }
+  }, [interviewCode, questionSet, dispatch]);
+
+  // This useEffect for handling page visibility/unload remains mostly the same,
+  // but the dispatched actions should eventually become async thunks as well.
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // TODO: Create and dispatch an async thunk to update status in the DB
+      // if (stage === 'question' && candidateId) {
+      //   dispatch(updateCandidateStatusInDB({ candidateId, status: 'abandoned' }));
+      // }
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden && stage === 'question' && candidateId) {
-        dispatch(updateCandidateStatus({ candidateId, status: 'abandoned' }));
-        if (sessionId) {
-          dispatch(deleteSession({ sessionId }));
-        }
-        onNavigate('home');
-      }
+      // TODO: Dispatch async thunk here as well
+      // if (document.hidden && stage === 'question' && candidateId) {
+      //   dispatch(updateCandidateStatusInDB({ candidateId, status: 'abandoned' }));
+      //   onNavigate('home');
+      // }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -77,18 +77,31 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [stage, candidateId, sessionId, dispatch, onNavigate]);
+  }, [stage, candidateId, dispatch, onNavigate]);
 
-  if (!questionSet) {
+  // *** MAJOR CHANGE: New loading and error states UI ***
+  if (status === 'loading' && !questionSet) {
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                <p className="text-slate-600">Verifying Interview Code...</p>
+            </div>
+        </div>
+    );
+  }
+
+  if ((status === 'failed' && !questionSet) || (status === 'succeeded' && !questionSet)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-900 mb-4">
               Invalid Interview Code
             </h2>
             <p className="text-slate-600 mb-6">
-              The interview code you entered is not valid. Please check and try again.
+              {error || 'The interview code you entered is not valid. Please check and try again.'}
             </p>
             <button
               onClick={() => onNavigate('home')}
@@ -101,25 +114,33 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
       </div>
     );
   }
+  
+  // If we have a questionSet but no selectedQuestions yet, it means loading is done
+  // but the interview hasn't started. This prevents rendering other stages prematurely.
+  if (!questionSet) return null;
 
-  const handleResumeComplete = (info) => {
-    const newCandidateId = uuidv4();
-    setCandidateId(newCandidateId);
+  // *** MAJOR CHANGE: handleResumeComplete now saves candidate to DB ***
+  const handleResumeComplete = async (info) => {
     setCandidateInfo(info);
-
-    dispatch(
-      createCandidate({
-        id: newCandidateId,
-        interviewCode,
-        name: info.name,
-        email: info.email,
-        phone: info.phone,
-      })
-    );
-
-    setStage('instructions');
+    try {
+      const resultAction = await dispatch(
+        createCandidateInDB({
+          interviewCode: interviewCode.toUpperCase(),
+          name: info.name,
+          email: info.email,
+          phone: info.phone,
+        })
+      );
+      const newCandidate = resultAction.payload;
+      setCandidateId(newCandidate.id); // Set the ID received from the DB
+      setStage('instructions');
+    } catch (err) {
+      console.error('Failed to create candidate:', err);
+      // Optionally set an error state to show in the UI
+    }
   };
 
+  // This function can remain as is, it only prepares client-side state
   const handleStartInterview = () => {
     const selected = selectQuestions(questionSet.questions);
     setSelectedQuestions(selected);
@@ -134,11 +155,11 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
         questions: selected,
       })
     );
-
     setStage('question');
   };
-
-  const handleAnswerSubmit = (answer) => {
+  
+  // *** MAJOR CHANGE: handleAnswerSubmit now saves answer to DB ***
+  const handleAnswerSubmit = async (answer) => {
     const currentQuestion = selectedQuestions[currentQuestionIndex];
     const evaluation = evaluateAnswer(
       answer,
@@ -146,59 +167,72 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
       currentQuestion.maxScore
     );
 
-    dispatch(
-      submitAnswer({
-        candidateId,
-        questionId: currentQuestion.id,
-        answer,
-        matchedKeywords: evaluation.matchedKeywords,
-        score: evaluation.score,
-      })
-    );
+    try {
+      await dispatch(
+        submitAnswerInDB({
+          candidateId,
+          questionId: currentQuestion.id,
+          answer,
+          matchedKeywords: evaluation.matchedKeywords,
+          score: evaluation.score,
+        })
+      ).unwrap();
 
-    setCurrentEvaluation(evaluation);
-    setAllAnswers([
-      ...allAnswers,
-      {
-        questionId: currentQuestion.id,
-        answer,
-        score: evaluation.score,
-      },
-    ]);
+      setCurrentEvaluation(evaluation);
+      setAllAnswers([
+        ...allAnswers,
+        {
+          questionId: currentQuestion.id,
+          answer,
+          score: evaluation.score,
+        },
+      ]);
+      setStage('feedback');
 
-    setStage('feedback');
+    } catch(err) {
+      console.error("Failed to submit answer:", err);
+      // Optionally show an error to the user
+    }
   };
-
-  const handleNextQuestion = () => {
+  
+  // *** MAJOR CHANGE: handleNextQuestion now updates final score in DB ***
+  const handleNextQuestion = async () => {
     if (currentQuestionIndex < selectedQuestions.length - 1) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
-
       dispatch(
         updateSession({
           sessionId,
           updates: { currentQuestionIndex: nextIndex },
         })
       );
-
       setStage('question');
     } else {
-      const finalScore = calculateFinalScore(
-        [...allAnswers, {
-          questionId: selectedQuestions[currentQuestionIndex].id,
-          score: currentEvaluation.score,
-        }],
-        selectedQuestions
-      );
+      // Calculate final score before dispatching
+      const finalAnswers = [
+          ...allAnswers,
+          {
+              questionId: selectedQuestions[currentQuestionIndex].id,
+              score: currentEvaluation.score,
+          },
+      ];
+      const finalScore = calculateFinalScore(finalAnswers, selectedQuestions);
 
-      dispatch(updateFinalScore({ candidateId, score: finalScore }));
-      dispatch(updateCandidateStatus({ candidateId, status: 'completed' }));
-      dispatch(deleteSession({ sessionId }));
+      try {
+        await dispatch(
+          updateCandidateOnCompletion({ candidateId, score: finalScore })
+        ).unwrap();
+        
+        dispatch(deleteSession({ sessionId }));
+        setStage('complete');
 
-      setStage('complete');
+      } catch (err) {
+        console.error("Failed to update final score:", err);
+      }
     }
   };
 
+  // The rendering logic for different stages remains the same
   if (stage === 'resume') {
     return (
       <ResumeUpload
@@ -241,7 +275,8 @@ export default function CandidateFlow({ interviewCode, onNavigate }) {
   }
 
   if (stage === 'complete') {
-    const finalScore = calculateFinalScore(allAnswers, selectedQuestions);
+    // We can now get the final score from the updated candidate object in Redux state
+    const finalScore = candidate?.finalScore || 0;
     return (
       <InterviewComplete
         finalScore={finalScore}
