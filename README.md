@@ -8,7 +8,7 @@ This implementation runs **entirely in the browser (frontend-only)**. No backend
 ---
 
 ## 🚀 Features
----
+
 ### Candidate Flow
 
 ![Candidate flow](assets/user2.svg)
