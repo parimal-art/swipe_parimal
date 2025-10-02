@@ -1,9 +1,8 @@
 # AI Interview Assistant
 
-An AI-powered interview assessment platform built with **React, Redux Toolkit, and Tailwind CSS**.
-It provides a **Candidate view** for taking timed interviews and an **Interviewer Dashboard** for managing question sets and monitoring candidate results.
+An AI-powered interview assessment platform built with **React**, **Redux Toolkit**, and **Tailwind CSS**. It provides a **Candidate view** for taking timed interviews and an **Interviewer Dashboard** for managing question sets and monitoring candidate results.
 
-This implementation runs **entirely in the browser (frontend-only)**. No backend server is required. All data is stored locally in Redux state and persisted with IndexedDB via `redux-persist`.
+This application uses **Supabase** as its backend, handling all data storage and functionalities. This ensures that data is persistent and accessible across different sessions and devices.
 
 ---
 
@@ -13,33 +12,29 @@ This implementation runs **entirely in the browser (frontend-only)**. No backend
 
 ![Candidate flow](assets/user2.svg)
 
-The candidate journey is designed to be seamless and straightforward, from receiving the interview code to completing the assessment.
+* **Enter Interview Code**: Candidate starts by entering the unique code provided by the interviewer.
+* **Upload Resume**: Upload a resume in `.txt` or `.docx` format (≤ 5 MB).
 
-* **Enter Interview Code**: The candidate starts by entering the unique code provided by the interviewer.
-* **Upload Resume**: They can upload a resume in TXT or DOCX format (≤5 MB).
+  * Name, Email, and Phone auto-extracted using regex heuristics.
+  * Missing fields can be filled manually.
+* **View Instructions**: Clear instructions shown before starting (rules, scoring criteria, disqualification conditions).
+* **Answer Questions**:
 
-  * Name, Email, and Phone are automatically extracted using regex heuristics.
-  * If any field is missed, the candidate can fill it in manually.
-* **View Instructions**: Before starting, clear instructions are displayed, outlining rules, scoring criteria, and conditions for disqualification.
-* **Answer Questions**: The assessment consists of 6 questions (2 Easy, 2 Medium, 2 Hard).
+  * 6 questions (2 Easy, 2 Medium, 2 Hard).
+  * Each question timed (default 120 seconds).
+  * Switching tabs or closing browser marks interview as abandoned.
+  * Empty answers or timeouts yield a score of 0.
+* **Instant Feedback**: Immediate feedback after each answer.
+* **Final Score**: Weighted score with performance breakdown shown at the end.
 
-  * Each question is timed with a default countdown of 120 seconds.
-  * The interview is marked as abandoned if the candidate switches tabs or closes the browser.
-  * An empty answer or running out of time results in a score of 0.
-* **Instant Feedback**: After submitting each answer, the candidate receives immediate feedback on their score for that question.
-* **Final Score**: Upon completion, a final, weighted score is displayed along with a performance breakdown.
------
 ### Interviewer Flow
 
 ![Interviewer flow](assets/interviewer.svg)
 
-The platform provides robust tools for interviewers to create, manage, and analyze interviews.
-
 * **Create a Question Set**:
 
-  * **Manual Entry**: Add questions one by one through a simple form.
-
-  * **CSV Upload**: Bulk-upload questions using a CSV file with the columns: `difficulty,question,keywords,maxScore`.
+  * Manual entry via form.
+  * Bulk CSV upload with format:
 
     ```csv
     difficulty,question,keywords,maxScore
@@ -47,18 +42,16 @@ The platform provides robust tools for interviewers to create, manage, and analy
     medium,"Explain JWT authentication.","jwt;authentication;token;header;payload",10
     hard,"Design a scalable file upload service.","scalable;file upload;cdn;storage;api gateway",15
     ```
+  * Validation ensures at least 2 questions per difficulty level.
+* **Code Generation**:
 
-  * **Validation**: The system ensures each question set contains at least two questions for each difficulty level (easy, medium, hard).
+  * Generates unique Interview Code (candidates) and Dashboard Code (interviewer).
+* **Share Code**: Interviewer shares Interview Code with candidates.
+* **Monitor Dashboard**:
 
-  * **Code Generation**: A unique **Interview Code** (for candidates) and a **Dashboard Code** (for the interviewer) are generated.
-
-* **Share Interview Code**: The interviewer shares the generated code with candidates.
-
-* **Monitor Dashboard**: Use the Dashboard Code to access the results page.
-
-  * **Candidate Overview**: View a list of all candidates with their Name, Email, Phone, Status (e.g., completed, in-progress), and Final Score.
-  * **Detailed Analysis**: Drill down into each candidate's answers, see matched keywords, and view individual question scores.
-  * **Aggregate Statistics**: Get insights from stats like total candidates, completion rates, and average scores.
+  * Candidate overview (Name, Email, Phone, Status, Final Score).
+  * Detailed analysis of answers, matched keywords, and scores.
+  * Aggregate statistics: total candidates, completion rate, average scores.
 
 ---
 
@@ -68,15 +61,14 @@ The platform provides robust tools for interviewers to create, manage, and analy
 
 ### Normalization
 
-All answers are normalized before evaluation to ensure fairness:
-
-* Converted to lowercase.
-* All punctuation is stripped.
-* Extra whitespace is removed.
+* Answers converted to lowercase.
+* Punctuation stripped.
+* Extra whitespace removed.
 
 ### Keyword Matching
 
-The system checks for the presence of predefined keywords in the candidate’s normalized answer. Each found keyword is marked as **matched**.
+* System checks for presence of predefined keywords.
+* Each match is recorded.
 
 ### Scoring
 
@@ -86,28 +78,25 @@ baseScore = (matchedKeywords / totalKeywords) * maxScore
 
 ### Bonus
 
-* +1 bonus point is awarded if the answer exceeds 20 words.
-* The total score for a question is capped at `maxScore + 1`.
+* +1 point if answer exceeds 20 words.
+* Max score per question = `maxScore + 1`.
 
 ### Final Weighted Score
 
-The final score is a weighted average reflecting the difficulty of the questions:
-
-* Easy questions have a weight of 1.
-* Medium questions have a weight of 2.
-* Hard questions have a weight of 3.
+* Easy = weight 1
+* Medium = weight 2
+* Hard = weight 3
 
 ```
 final_score = Σ(score_i × weight_i) / Σ(weights)
 ```
 
-#### Example Calculation
+**Example:**
 
-* Easy Scores: 6, 7
-* Medium Scores: 8, 5
-* Hard Scores: 9, 6
-
-Final Score ≈ **7.2**
+* Easy: 6, 7
+* Medium: 8, 5
+* Hard: 9, 6
+* Final Score ≈ **7.2**
 
 ---
 
@@ -136,7 +125,7 @@ ai-interview-assistant/
 │   │   └── InterviewerDashboard.jsx
 │   ├── store/
 │   │   ├── store.js         # Redux store config
-│   │   └── interviewSlice.js # State: candidates, sessions, questionSets
+│   │   └── interviewSlice.js # State management
 │   └── utils/
 │       └── evaluation.js    # Evaluation + scoring logic
 ```
@@ -145,7 +134,7 @@ ai-interview-assistant/
 
 ## 🛠️ Installation
 
-Clone the repository:
+Clone repository:
 
 ```bash
 git clone <repo-url>
@@ -162,14 +151,18 @@ npm install
 
 ## 🔧 Environment Setup
 
-Create a `.env` file in the project's root directory. While the current implementation is frontend-only, these variables are placeholders for a planned future integration with a Supabase backend.
+Create `.env` file at project root:
 
-```
+```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_ANON_key
 ```
 
-Run the development server:
+---
+
+## ▶️ Run
+
+Development server:
 
 ```bash
 npm run dev
@@ -186,29 +179,50 @@ npm run preview
 
 ## 📊 State Management
 
-* **Redux Toolkit**: State is managed centrally in a Redux slice defined in `interviewSlice.js`.
-* **State**: Stores all `questionSets`, `candidates`, and `interviewSessions`.
-* **Actions**: Includes reducers like `createQuestionSet`, `createCandidate`, `submitAnswer`, and `updateFinalScore`.
-* **Persistence**:
-
-  * The entire Redux state is persisted in IndexedDB using `redux-persist` and `localforage`.
-  * This allows a candidate to refresh the page and resume an incomplete interview without losing progress.
+* **Redux Toolkit** for central state management.
+* **State**: Stores `questionSets`, `candidates`, `interviewSessions`.
+* **Actions**: Reducers like `createQuestionSet`, `createCandidate`, `submitAnswer`, `updateFinalScore`.
+* **Persistence**: Supabase PostgreSQL stores all app data.
+* Async thunks sync state with Supabase.
 
 ---
 
 ## 📑 Security & Limitations
 
-* **File Format**: Only `.txt` and `.docx` files are allowed for resume uploads.
-* **PDF Parsing**: Parsing PDF files reliably on the client-side is complex due to varied layouts and binary structures, often leading to data extraction errors. To ensure consistency, PDF support is currently excluded.
-* **File Size**: Maximum upload size is capped at 5 MB.
-* **Data Storage**: All data is stored locally in the user's browser. Clearing site data will erase all question sets and candidate results.
-* **Access Control**: There is no authentication for the interviewer dashboard; access is granted to anyone with the `dashboardCode`.
+* File format: only `.txt` and `.docx` resumes supported.
+* No PDF support (client parsing unreliable).
+* Max file size: 5 MB.
+* Data stored securely in Supabase.
+* No authentication: interviewer dashboard accessible with Dashboard Code.
 
 ---
 
 ## 🔮 Future Enhancements
 
-* **Server-Side PDF Parsing**: Implement robust PDF resume parsing on the server.
-* **Authentication**: Add proper authentication for interviewers and role-based access control.
-* **Reporting**: Allow exporting candidate reports to CSV or PDF.
-* **Real-Time Sync**: Enable real-time updates on the dashboard to monitor candidate progress live.
+* Server-side PDF resume parsing.
+* Authentication + role-based access control.
+* Candidate reports export (CSV, PDF).
+* Real-time dashboard sync.
+* AI-based semantic scoring (beyond keyword matching).
+* Advanced interviewer analytics with visualization.
+
+---
+
+## 📝 Conclusion
+
+The **AI Interview Assistant** streamlines the hiring process by automating candidate assessments, scoring, and monitoring. Its seamless **candidate flow** ensures a fair test environment, while the **interviewer dashboard** empowers recruiters with detailed insights and statistics. By leveraging **React**, **Redux Toolkit**, **Tailwind CSS**, and **Supabase**, this project achieves a scalable, secure, and user-friendly solution for modern interview management.
+
+This project can serve as a foundation for building more advanced **AI-driven recruitment systems**, integrating NLP, semantic analysis, and predictive analytics in future versions.
+
+---
+
+## 👨‍💻 Author
+
+**Parimal Maity**
+AI & Full Stack Developer
+📧 Contact: [parimalmaity852@gmail.com](mailto:parimalmaity852@gmail.com)
+🔗 GitHub: [https://github.com/parimal-art](https://github.com/parimal-art)
+
+---
+
+> "The best way to predict the future is to create it." – Peter Drucker
