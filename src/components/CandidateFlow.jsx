@@ -32,7 +32,6 @@ export default function CandidateFlow() {
   const { questionSets, candidates, status, error } = useSelector(
     (state) => state.interview
   );
-
   const [stage, setStage] = useState('resume');
   const [candidateId, setCandidateId] = useState(null);
   const [sessionId, setSessionId] = useState(null);
@@ -41,6 +40,9 @@ export default function CandidateFlow() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentEvaluation, setCurrentEvaluation] = useState(null);
   const [allAnswers, setAllAnswers] = useState([]);
+  
+  // STEP 1: Ek naya state variable add karein. Yeh final score ko turant store karega.
+  const [finalScoreForDisplay, setFinalScoreForDisplay] = useState(null); // <--- CHANGE
 
   const questionSet = interviewCode ? questionSets[interviewCode.toUpperCase()] : undefined;
   const candidate = candidates[candidateId];
@@ -107,7 +109,7 @@ export default function CandidateFlow() {
               {error || 'The interview code you entered is not valid. Please check and try again.'}
             </p>
             <button
-              onClick={() => navigate('/')}
+               onClick={() => navigate('/')}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               Back to Home
@@ -206,6 +208,10 @@ export default function CandidateFlow() {
         },
       ];
       const finalScore = calculateFinalScore(finalAnswers, selectedQuestions);
+      
+      // STEP 2: Yahan par calculated score ko naye local state mein set karein.
+      setFinalScoreForDisplay(finalScore); // <--- CHANGE
+
       try {
         await dispatch(
           updateCandidateOnCompletion({ candidateId, score: finalScore })
@@ -260,10 +266,11 @@ export default function CandidateFlow() {
   }
 
   if (stage === 'complete') {
-    const finalScore = candidate?.final_score || 0;
+    // STEP 3: Yahan Redux state ke bajaye local state se score pass karein.
+    // Purani line: const finalScore = candidate?.final_score || 0;
     return (
       <InterviewComplete
-        finalScore={finalScore}
+        finalScore={finalScoreForDisplay ?? 0} // <--- CHANGE
         candidateInfo={candidateInfo}
         totalQuestions={selectedQuestions.length}
         onNavigate={navigate}
