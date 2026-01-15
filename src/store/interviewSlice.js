@@ -1,21 +1,25 @@
-
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { supabase } from '../lib/supabase';
 
+// MERN Backend API URL (Ensure your Node server is running on port 5000)
+const API_URL = import.meta.env.VITE_API_URL;
 
+// 1. Create Question Set
 export const createQuestionSetInDB = createAsyncThunk(
   'interview/createQuestionSetInDB',
   async (questionSetData, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase.from('question_sets').insert([
-        {
-          interview_code: questionSetData.interviewCode,
-          dashboard_code: questionSetData.dashboardCode,
-          questions: questionSetData.questions,
-        },
-      ]);
-      if (error) throw error;
+      const response = await fetch(`${API_URL}/question-set`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(questionSetData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create question set');
+      }
+
+      // Return original data to update Redux state immediately
       return questionSetData;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -23,92 +27,110 @@ export const createQuestionSetInDB = createAsyncThunk(
   }
 );
 
+// 2. Fetch Question Set by Code
 export const fetchQuestionSetByCode = createAsyncThunk(
   'interview/fetchQuestionSetByCode',
   async (interviewCode, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase
-        .from('question_sets')
-        .select('*')
-        .eq('interview_code', interviewCode.toUpperCase())
-        .single();
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      return rejectWithValue('Invalid Interview Code');
-    }
-  }
-);
+      const response = await fetch(`${API_URL}/question-set/${interviewCode}`);
+      
+      if (!response.ok) {
+        throw new Error('Invalid Interview Code');
+      }
 
-export const fetchDashboardDataByCode = createAsyncThunk(
-  'interview/fetchDashboardDataByCode',
-  async (dashboardCode, { rejectWithValue }) => {
-    try {
-      const { data: questionSet, error: qsError } = await supabase
-        .from('question_sets')
-        .select('*')
-        .eq('dashboard_code', dashboardCode.toUpperCase())
-        .single();
-      if (qsError) throw qsError;
+      const data = await response.json();
 
-      const { data: candidates, error: candidatesError } = await supabase
-        .from('candidates')
-        .select('*, answers(*)')
-        .eq('interview_code', questionSet.interview_code);
-      if (candidatesError) throw candidatesError;
-
-      return { questionSet, candidates };
-    } catch (error) {
-      return rejectWithValue(
-        'Invalid Dashboard Code or failed to fetch data.'
-      );
-    }
-  }
-);
-
-export const createCandidateInDB = createAsyncThunk(
-  'interview/createCandidateInDB',
-  async (candidateData, { rejectWithValue }) => {
-    try {
-      const { data, error } = await supabase
-        .from('candidates')
-        .insert([
-          {
-            interview_code: candidateData.interviewCode,
-            name: candidateData.name,
-            email: candidateData.email,
-            phone: candidateData.phone,
-            status: 'in_progress',
-            final_score: 0,
-          },
-        ])
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
+      // Mapping MongoDB camelCase to Redux snake_case expectation
+      return {
+        interview_code: data.interviewCode,
+        dashboard_code: data.dashboardCode,
+        questions: data.questions,
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
+// 3. Fetch Dashboard Data
+export const fetchDashboardDataByCode = createAsyncThunk(
+  'interview/fetchDashboardDataByCode',
+  async (dashboardCode, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/dashboard/${dashboardCode}`);
+
+      if (!response.ok) {
+        throw new Error('Invalid Dashboard Code or failed to fetch data.');
+      }
+
+      const data = await response.json();
+      
+      // Data is expected to be { questionSet, candidates } from the backend
+      // Ensure specific field mapping if backend doesn't handle it
+      const questionSet = {
+        interview_code: data.questionSet.interviewCode,
+        dashboard_code: data.questionSet.dashboardCode,
+        questions: data.questionSet.questions,
+      };
+
+      return { questionSet, candidates: data.candidates };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 4. Create Candidate
+export const createCandidateInDB = createAsyncThunk(
+  'interview/createCandidateInDB',
+  async (candidateData, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/candidate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(candidateData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create candidate');
+      }
+
+      const data = await response.json();
+
+      // Normalize MongoDB _id to id for frontend use
+      return {
+        ...data,
+        id: data.id || data._id, 
+        interview_code: data.interviewCode,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 5. Submit Answer
 export const submitAnswerInDB = createAsyncThunk(
   'interview/submitAnswerInDB',
-  async (
-    { candidateId, questionId, answer, matchedKeywords, score },
-    { rejectWithValue }
-  ) => {
+  async ({ candidateId, questionId, answer, matchedKeywords, score }, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase.from('answers').insert([
-        {
-          candidate_id: candidateId,
-          question_id: questionId,
-          answer: answer,
-          matched_keywords: matchedKeywords,
-          score: score,
-        },
-      ]);
-      if (error) throw error;
+      const response = await fetch(`${API_URL}/answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidateId,
+          questionId,
+          answer,
+          matchedKeywords,
+          score,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit answer');
+      }
+
+      // Return payload to update Redux state
       return { candidateId, questionId, answer, matchedKeywords, score };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -116,43 +138,65 @@ export const submitAnswerInDB = createAsyncThunk(
   }
 );
 
+// 6. Update Candidate Completion (Final Score)
 export const updateCandidateOnCompletion = createAsyncThunk(
   'interview/updateCandidateOnCompletion',
   async ({ candidateId, score }, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase
-        .from('candidates')
-        .update({ final_score: score, status: 'completed' })
-        .eq('id', candidateId)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
+      const response = await fetch(`${API_URL}/candidate/${candidateId}/complete`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update final score');
+      }
+
+      const data = await response.json();
+      
+      return {
+        id: candidateId,
+        status: data.status,
+        final_score: data.finalScore, // Mapping for reducer
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-
+// 7. Update Candidate Status (e.g., Abandoned)
+// Note: You need to ensure your backend has a route for this, 
+// or use the same update endpoint as above with different body.
 export const updateCandidateStatusInDB = createAsyncThunk(
   'interview/updateCandidateStatusInDB',
   async ({ candidateId, status }, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase
-        .from('candidates')
-        .update({ status: status })
-        .eq('id', candidateId)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
+      // Assuming a generic update route exists on backend
+      // If not, you can create one: router.put('/candidate/:id/status', ...)
+      const response = await fetch(`${API_URL}/candidate/${candidateId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+         // Fallback: If specific status route doesn't exist, try generic update if you have one
+         // For now, throwing error to alert dev to create the route
+        throw new Error('Failed to update status');
+      }
+
+      const data = await response.json();
+      return {
+        id: candidateId,
+        status: data.status,
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
-
 
 const initialState = {
   questionSets: {},
@@ -194,8 +238,7 @@ const interviewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
-
+      // Create Question Set
       .addCase(createQuestionSetInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { interviewCode, dashboardCode, questions } = action.payload;
@@ -205,6 +248,7 @@ const interviewSlice = createSlice({
           questions,
         };
       })
+      // Fetch Question Set
       .addCase(fetchQuestionSetByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const questionSet = action.payload;
@@ -216,6 +260,7 @@ const interviewSlice = createSlice({
           };
         }
       })
+      // Fetch Dashboard
       .addCase(fetchDashboardDataByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { questionSet, candidates } = action.payload;
@@ -228,21 +273,25 @@ const interviewSlice = createSlice({
 
         state.candidates = {};
         candidates.forEach((candidate) => {
-          state.candidates[candidate.id] = {
+          // Mapping Mongo data to State
+          state.candidates[candidate.id || candidate._id] = {
             ...candidate,
-            finalScore: candidate.final_score,
+            id: candidate.id || candidate._id,
+            finalScore: candidate.final_score || candidate.finalScore,
           };
         });
       })
+      // Create Candidate
       .addCase(createCandidateInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const candidate = action.payload;
         state.candidates[candidate.id] = {
           ...candidate,
           answers: [],
-          finalScore: candidate.final_score,
+          finalScore: 0,
         };
       })
+      // Submit Answer
       .addCase(submitAnswerInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { candidateId, ...answerData } = action.payload;
@@ -253,27 +302,25 @@ const interviewSlice = createSlice({
           state.candidates[candidateId].answers.push(answerData);
         }
       })
+      // Update Completion
       .addCase(updateCandidateOnCompletion.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
         if (state.candidates[updatedCandidate.id]) {
-          state.candidates[updatedCandidate.id].status =
-            updatedCandidate.status;
-          state.candidates[updatedCandidate.id].finalScore =
-            updatedCandidate.final_score;
+          state.candidates[updatedCandidate.id].status = updatedCandidate.status;
+          state.candidates[updatedCandidate.id].finalScore = updatedCandidate.final_score;
         }
       })
-
+      // Update Status (Abandoned)
       .addCase(updateCandidateStatusInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
         if (state.candidates[updatedCandidate.id]) {
-          state.candidates[updatedCandidate.id].status =
-            updatedCandidate.status;
+          state.candidates[updatedCandidate.id].status = updatedCandidate.status;
         }
       })
 
-
+      // Loading & Error States
       .addMatcher(
         (action) => action.type.endsWith('/pending'),
         (state) => {
@@ -291,7 +338,6 @@ const interviewSlice = createSlice({
   },
 });
 
-export const { createSession, updateSession, deleteSession, clearError } =
-  interviewSlice.actions;
+export const { createSession, updateSession, deleteSession, clearError } = interviewSlice.actions;
 
 export default interviewSlice.reducer;
