@@ -1,8 +1,8 @@
-# AI Interview Assistant
+# SmartHire Interview Platform
 
-An AI-powered interview assessment platform built with **React**, **Redux Toolkit**, and **Tailwind CSS**. It provides a **Candidate view** for taking timed interviews and an **Interviewer Dashboard** for managing question sets and monitoring candidate results.
+An AI-powered interview assessment platform built with **React**, **Redux Toolkit**, **Node.js/Express**, and **Tailwind CSS**. It provides a **Candidate view** for taking timed interviews and an **Interviewer Dashboard** for managing question sets and monitoring candidate results.
 
-This application uses **Supabase** as its backend, handling all data storage and functionalities. This ensures that data is persistent and accessible across different sessions and devices.
+This application uses **MongoDB** with **Mongoose** as its backend database, handling all data storage and functionalities. This ensures that data is persistent and accessible across different sessions and devices.
 
 ---
 
@@ -105,29 +105,43 @@ final_score = Σ(score_i × weight_i) / Σ(weights)
 ```
 ai-interview-assistant/
 ├── index.html               # Entry HTML
-├── package.json             # Dependencies
+├── package.json             # Frontend dependencies
 ├── vite.config.js           # Vite config
 ├── tailwind.config.js       # Tailwind config
 ├── postcss.config.js
-├── src/
-│   ├── App.jsx              # Main view controller
-│   ├── main.jsx             # React entry point
-│   ├── index.css            # Tailwind directives
-│   ├── components/          # UI Components
-│   │   ├── HomePage.jsx
-│   │   ├── CreateQuestions.jsx
-│   │   ├── CandidateFlow.jsx
-│   │   ├── ResumeUpload.jsx
-│   │   ├── InterviewInstructions.jsx
-│   │   ├── InterviewQuestion.jsx
-│   │   ├── QuestionFeedback.jsx
-│   │   ├── InterviewComplete.jsx
-│   │   └── InterviewerDashboard.jsx
-│   ├── store/
-│   │   ├── store.js         # Redux store config
-│   │   └── interviewSlice.js # State management
-│   └── utils/
-│       └── evaluation.js    # Evaluation + scoring logic
+├── backend/
+│   ├── package.json         # Backend dependencies
+│   ├── server.js            # Express server entry point
+│   ├── config/
+│   │   └── db.js            # MongoDB connection
+│   ├── models/
+│   │   ├── Candidate.js     # Candidate schema
+│   │   └── QuestionSet.js   # Question set schema
+│   ├── controllers/
+│   │   ├── candidateController.js
+│   │   └── questionSetController.js
+│   └── routes/
+│       ├── candidateRoutes.js
+│       └── questionSetRoutes.js
+└── src/
+    ├── App.jsx              # Main view controller
+    ├── main.jsx             # React entry point
+    ├── index.css            # Tailwind directives
+    ├── components/          # UI Components
+    │   ├── HomePage.jsx
+    │   ├── CreateQuestions.jsx
+    │   ├── CandidateFlow.jsx
+    │   ├── ResumeUpload.jsx
+    │   ├── InterviewInstructions.jsx
+    │   ├── InterviewQuestion.jsx
+    │   ├── QuestionFeedback.jsx
+    │   ├── InterviewComplete.jsx
+    │   └── InterviewerDashboard.jsx
+    ├── store/
+    │   ├── store.js         # Redux store config
+    │   └── interviewSlice.js # State management
+    └── utils/
+        └── evaluation.js    # Evaluation + scoring logic
 ```
 
 ---
@@ -141,38 +155,78 @@ git clone <repo-url>
 cd ai-interview-assistant
 ```
 
-Install dependencies:
+Install frontend dependencies:
 
 ```bash
 npm install
+```
+
+Install backend dependencies:
+
+```bash
+cd backend
+npm install
+cd ..
 ```
 
 ---
 
 ## 🔧 Environment Setup
 
+### Backend Environment
+
+Create `.env` file in the `backend/` folder:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+PORT=5000
+```
+
+### Frontend Environment
+
 Create `.env` file at project root:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_ANON_key
+VITE_API_URL=http://localhost:5000/api
 ```
 
 ---
 
 ## ▶️ Run
 
-Development server:
+### Start Backend Server
+
+```bash
+cd backend
+npm run dev
+```
+
+The backend server will run on `http://localhost:5000`
+
+### Start Frontend Development Server
+
+In a new terminal, from the project root:
 
 ```bash
 npm run dev
 ```
 
-Build for production:
+The frontend will run on `http://localhost:5173`
+
+### Build for Production
+
+Frontend:
 
 ```bash
 npm run build
 npm run preview
+```
+
+Backend:
+
+```bash
+cd backend
+npm start
 ```
 
 ---
@@ -181,9 +235,31 @@ npm run preview
 
 * **Redux Toolkit** for central state management.
 * **State**: Stores `questionSets`, `candidates`, `interviewSessions`.
-* **Actions**: Reducers like `createQuestionSet`, `createCandidate`, `submitAnswer`, `updateFinalScore`.
-* **Persistence**: Supabase PostgreSQL stores all app data.
-* Async thunks sync state with Supabase.
+* **Actions**: Async thunks like `createQuestionSetInDB`, `createCandidateInDB`, `submitAnswerInDB`, `updateCandidateOnCompletion`.
+* **Persistence**: MongoDB stores all app data via Express REST API.
+* Async thunks sync state with MongoDB backend.
+
+---
+
+## 🗄️ Backend Architecture
+
+### Tech Stack
+- **Node.js & Express**: RESTful API server
+- **MongoDB & Mongoose**: Database and ODM
+- **CORS**: Cross-origin resource sharing enabled
+
+### API Endpoints
+
+**Question Sets:**
+- `POST /api/question-set` - Create new question set
+- `GET /api/question-set/:code` - Get question set by interview code
+- `GET /api/question-set/dashboard/:code` - Get dashboard data by dashboard code
+
+**Candidates:**
+- `POST /api/candidate` - Create new candidate
+- `POST /api/candidate/answer` - Submit an answer
+- `PUT /api/candidate/:id/complete` - Mark interview complete with final score
+- `PUT /api/candidate/:id/status` - Update candidate status (e.g., abandoned)
 
 ---
 
@@ -192,8 +268,9 @@ npm run preview
 * File format: only `.txt` and `.docx` resumes supported.
 * No PDF support (client parsing unreliable).
 * Max file size: 5 MB.
-* Data stored securely in Supabase.
-* No authentication: interviewer dashboard accessible with Dashboard Code.
+* Data stored in MongoDB database.
+* No authentication: interviewer dashboard accessible with Dashboard Code only.
+* CORS enabled for local development.
 
 ---
 
@@ -202,15 +279,17 @@ npm run preview
 * Server-side PDF resume parsing.
 * Authentication + role-based access control.
 * Candidate reports export (CSV, PDF).
-* Real-time dashboard sync.
+* Real-time dashboard sync using WebSockets.
 * AI-based semantic scoring (beyond keyword matching).
 * Advanced interviewer analytics with visualization.
+* Email notifications for candidates and interviewers.
+* Multi-language support.
 
 ---
 
 ## 📝 Conclusion
 
-The **AI Interview Assistant** streamlines the hiring process by automating candidate assessments, scoring, and monitoring. Its seamless **candidate flow** ensures a fair test environment, while the **interviewer dashboard** empowers recruiters with detailed insights and statistics. By leveraging **React**, **Redux Toolkit**, **Tailwind CSS**, and **Supabase**, this project achieves a scalable, secure, and user-friendly solution for modern interview management.
+The **AI Interview Assistant** streamlines the hiring process by automating candidate assessments, scoring, and monitoring. Its seamless **candidate flow** ensures a fair test environment, while the **interviewer dashboard** empowers recruiters with detailed insights and statistics. By leveraging **React**, **Redux Toolkit**, **Tailwind CSS**, **Node.js**, **Express**, and **MongoDB**, this project achieves a scalable, secure, and user-friendly solution for modern interview management.
 
 This project can serve as a foundation for building more advanced **AI-driven recruitment systems**, integrating NLP, semantic analysis, and predictive analytics in future versions.
 
@@ -218,9 +297,9 @@ This project can serve as a foundation for building more advanced **AI-driven re
 
 ## 👨‍💻 Author
 
-**Parimal Maity**
-AI & Full Stack Developer
-📧 Contact: [parimalmaity852@gmail.com](mailto:parimalmaity852@gmail.com)
+**Parimal Maity**  
+AI & Full Stack Developer  
+📧 Contact: [parimalmaity852@gmail.com](mailto:parimalmaity852@gmail.com)  
 🔗 GitHub: [https://github.com/parimal-art](https://github.com/parimal-art)
 
 ---
