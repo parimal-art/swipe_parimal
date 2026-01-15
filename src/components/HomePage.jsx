@@ -28,7 +28,7 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-slate-900 mb-4">
-            AI Interview Assistant
+             SmartHire Interview Platform
           </h1>
           <p className="text-xl text-slate-600">
             Streamline your interview process with intelligent assessments
