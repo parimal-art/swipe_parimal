@@ -18,9 +18,7 @@ exports.getQuestionSet = async (req, res) => {
     const set = await QuestionSet.findOne({
       interviewCode: req.params.code.toUpperCase(),
     });
-
-    if (!set) return res.status(404).json({ error: "Invalid Interview Code" });
-
+    if (!set) return res.status(404).json({ error: "Invalid Assessment Code" });
     res.json(set);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -33,7 +31,6 @@ exports.getDashboardData = async (req, res) => {
     const questionSet = await QuestionSet.findOne({
       dashboardCode: req.params.code.toUpperCase(),
     });
-
     if (!questionSet)
       return res.status(404).json({ error: "Invalid Dashboard Code" });
 
@@ -49,8 +46,10 @@ exports.getDashboardData = async (req, res) => {
       interview_code: c.interviewCode,
       answers: c.answers.map((a) => ({
         question_id: a.questionId,
+        question_type: a.questionType,
         answer: a.answer,
         score: a.score,
+        is_correct: a.isCorrect,
         matched_keywords: a.matchedKeywords,
       })),
     }));

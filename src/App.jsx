@@ -8,16 +8,19 @@ import HomePage from './components/HomePage';
 import CreateQuestions from './components/CreateQuestions';
 import CandidateFlow from './components/CandidateFlow';
 import InterviewerDashboard from './components/InterviewerDashboard';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
 
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/create-questions" element={<CreateQuestions />} />
-      <Route path="/interview/:interviewCode" element={<CandidateFlow />} />
-      <Route path="/dashboard/:dashboardCode" element={<InterviewerDashboard />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-questions" element={<CreateQuestions />} />
+        <Route path="/interview/:interviewCode" element={<CandidateFlow />} />
+        <Route path="/dashboard/:dashboardCode" element={<InterviewerDashboard />} />
+      </Routes>
+    </>
   );
 }
 

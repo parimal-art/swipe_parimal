@@ -11,8 +11,10 @@ const CandidateSchema = new mongoose.Schema({
   answers: [
     {
       questionId: String,
-      answer: String,
-      matchedKeywords: Array,
+      questionType: { type: String, default: "long" }, // "long" or "mcq"
+      answer: String,           // For long: text. For MCQ: selected option text
+      isCorrect: Boolean,       // For MCQ: true/false
+      matchedKeywords: Array,   // For long answers
       score: Number,
     },
   ],

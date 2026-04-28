@@ -30,7 +30,7 @@ export default function InterviewerDashboard() {
   }, [dashboardCode, dispatch]);
 
   const questionSet = Object.values(questionSets).find(
-    (qs) => qs.dashboardCode === dashboardCode
+    (qs) => qs.dashboardCode === dashboardCode?.toUpperCase()
   );
 
   if (status === 'loading') {
@@ -120,7 +120,7 @@ export default function InterviewerDashboard() {
               <div className="text-right">
                 <p className="text-sm text-slate-500 mb-1">Final Score</p>
                 <p className="text-5xl font-bold text-emerald-600">
-                  {candidate.final_score.toFixed(1)}
+                  {(candidate.final_score || 0).toFixed(1)}
                 </p>
               </div>
             </div>
@@ -191,27 +191,42 @@ export default function InterviewerDashboard() {
                         {answer.answer || '(No answer provided)'}
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-700 mb-2">
-                        Keyword Analysis:
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {question.keywords.map((keyword, i) => (
-                          <span key={i} className={`px-2 py-1 text-xs rounded ${
-                              answer.matched_keywords.includes(keyword)
-                                ? 'bg-emerald-100 text-emerald-700 font-semibold'
-                                : 'bg-slate-200 text-slate-500 line-through'
-                            }`}
-                          >
-                            {keyword}
-                          </span>
-                        ))}
+                    {question.questionType === 'mcq' ? (
+                      <div>
+                        <p className="text-sm font-medium text-slate-700 mb-2">
+                          MCQ Result:
+                        </p>
+                        <div className={`rounded p-3 text-sm ${
+                          answer.is_correct
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-red-50 text-red-700'
+                        }`}>
+                          {answer.is_correct ? 'Correct' : 'Incorrect'} · Correct answer: {question.correctAnswer}
+                        </div>
                       </div>
-                      <p className="text-xs text-slate-500 mt-2">
-                        Matched {answer.matched_keywords.length} out of{' '} 
-                        {question.keywords.length} keywords
-                      </p>
-                    </div>
+                    ) : (
+                      <div>
+                        <p className="text-sm font-medium text-slate-700 mb-2">
+                          Keyword Analysis:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {(question.keywords || []).map((keyword, i) => (
+                            <span key={i} className={`px-2 py-1 text-xs rounded ${
+                                (answer.matched_keywords || []).includes(keyword)
+                                  ? 'bg-emerald-100 text-emerald-700 font-semibold'
+                                  : 'bg-slate-200 text-slate-500 line-through'
+                              }`}
+                            >
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">
+                          Matched {(answer.matched_keywords || []).length} out of{' '} 
+                          {(question.keywords || []).length} keywords
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -228,10 +243,10 @@ export default function InterviewerDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">
-              Interviewer Dashboard
+              Assessment Dashboard
             </h2>
             <p className="text-slate-600">
-              Interview Code:{' '}
+              Assessment Code:{' '}
               <span className="font-mono font-semibold">
                 {questionSet.interviewCode}
               </span>
@@ -279,7 +294,7 @@ export default function InterviewerDashboard() {
           {interviewCandidates.length === 0 ? (
             <div className="text-center py-12">
               <Users className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500">No candidates have taken the interview yet.</p>
+              <p className="text-slate-500">No candidates have taken the assessment yet.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -315,7 +330,7 @@ export default function InterviewerDashboard() {
                             {candidate.status.replace('_', ' ').toUpperCase()}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm font-bold text-emerald-600">{candidate.final_score.toFixed(1)}</td>
+                        <td className="py-3 px-4 text-sm font-bold text-emerald-600">{(candidate.final_score || 0).toFixed(1)}</td>
                         <td className="py-3 px-4 text-sm text-slate-600">{new Date(candidate.created_at).toLocaleDateString()}</td>
                         <td className="py-3 px-4">
                           <button onClick={() => setSelectedCandidate(candidate.id)} className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors">

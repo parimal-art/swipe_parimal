@@ -19,7 +19,7 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
               <Trophy className="w-10 h-10 text-emerald-600" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">
-              Interview Completed!
+              Assessment Completed!
             </h2>
             <p className="text-slate-600">
               Congratulations, {candidateInfo.name}
@@ -65,11 +65,11 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
             <ul className="space-y-2 text-sm text-blue-800">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>Your responses have been saved and submitted to the interviewer</span>
+                <span>Your responses have been saved and submitted</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>The interviewer will review your detailed answers and scores</span>
+                <span>Your detailed answers and scores are available in the dashboard</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -90,7 +90,7 @@ export default function InterviewComplete({ finalScore, candidateInfo, totalQues
         </div>
 
         <div className="text-center mt-6 text-slate-500 text-sm">
-          Thank you for taking the time to complete this interview.
+          Thank you for taking the time to complete this assessment.
         </div>
       </div>
     </div>

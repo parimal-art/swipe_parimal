@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// MERN Backend API URL (Ensure your Node server is running on port 5000)
 const API_URL = import.meta.env.VITE_API_URL;
 
 // 1. Create Question Set
@@ -13,13 +12,10 @@ export const createQuestionSetInDB = createAsyncThunk(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(questionSetData),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create question set');
       }
-
-      // Return original data to update Redux state immediately
       return questionSetData;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -33,14 +29,8 @@ export const fetchQuestionSetByCode = createAsyncThunk(
   async (interviewCode, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_URL}/question-set/${interviewCode}`);
-      
-      if (!response.ok) {
-        throw new Error('Invalid Interview Code');
-      }
-
+      if (!response.ok) throw new Error('Invalid Assessment Code');
       const data = await response.json();
-
-      // Mapping MongoDB camelCase to Redux snake_case expectation
       return {
         interview_code: data.interviewCode,
         dashboard_code: data.dashboardCode,
@@ -57,22 +47,14 @@ export const fetchDashboardDataByCode = createAsyncThunk(
   'interview/fetchDashboardDataByCode',
   async (dashboardCode, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/dashboard/${dashboardCode}`);
-
-      if (!response.ok) {
-        throw new Error('Invalid Dashboard Code or failed to fetch data.');
-      }
-
+      const response = await fetch(`${API_URL}/question-set/dashboard/${dashboardCode}`);
+      if (!response.ok) throw new Error('Invalid Dashboard Code or failed to fetch data.');
       const data = await response.json();
-      
-      // Data is expected to be { questionSet, candidates } from the backend
-      // Ensure specific field mapping if backend doesn't handle it
       const questionSet = {
         interview_code: data.questionSet.interviewCode,
         dashboard_code: data.questionSet.dashboardCode,
         questions: data.questionSet.questions,
       };
-
       return { questionSet, candidates: data.candidates };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -90,17 +72,11 @@ export const createCandidateInDB = createAsyncThunk(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(candidateData),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create candidate');
-      }
-
+      if (!response.ok) throw new Error('Failed to create candidate');
       const data = await response.json();
-
-      // Normalize MongoDB _id to id for frontend use
       return {
         ...data,
-        id: data.id || data._id, 
+        id: data.id || data._id,
         interview_code: data.interviewCode,
       };
     } catch (error) {
@@ -112,33 +88,22 @@ export const createCandidateInDB = createAsyncThunk(
 // 5. Submit Answer
 export const submitAnswerInDB = createAsyncThunk(
   'interview/submitAnswerInDB',
-  async ({ candidateId, questionId, answer, matchedKeywords, score }, { rejectWithValue }) => {
+  async ({ candidateId, questionId, questionType, answer, matchedKeywords, score, isCorrect }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/answer`, {
+      const response = await fetch(`${API_URL}/candidate/answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          candidateId,
-          questionId,
-          answer,
-          matchedKeywords,
-          score,
-        }),
+        body: JSON.stringify({ candidateId, questionId, questionType, answer, matchedKeywords, score, isCorrect }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit answer');
-      }
-
-      // Return payload to update Redux state
-      return { candidateId, questionId, answer, matchedKeywords, score };
+      if (!response.ok) throw new Error('Failed to submit answer');
+      return { candidateId, questionId, questionType, answer, matchedKeywords, score, isCorrect };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// 6. Update Candidate Completion (Final Score)
+// 6. Update Candidate Completion
 export const updateCandidateOnCompletion = createAsyncThunk(
   'interview/updateCandidateOnCompletion',
   async ({ candidateId, score }, { rejectWithValue }) => {
@@ -148,17 +113,12 @@ export const updateCandidateOnCompletion = createAsyncThunk(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ score }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update final score');
-      }
-
+      if (!response.ok) throw new Error('Failed to update final score');
       const data = await response.json();
-      
       return {
         id: candidateId,
         status: data.status,
-        final_score: data.finalScore, // Mapping for reducer
+        final_score: data.finalScore,
       };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -166,32 +126,44 @@ export const updateCandidateOnCompletion = createAsyncThunk(
   }
 );
 
-// 7. Update Candidate Status (e.g., Abandoned)
-// Note: You need to ensure your backend has a route for this, 
-// or use the same update endpoint as above with different body.
+// 7. Update Candidate Status
 export const updateCandidateStatusInDB = createAsyncThunk(
   'interview/updateCandidateStatusInDB',
   async ({ candidateId, status }, { rejectWithValue }) => {
     try {
-      // Assuming a generic update route exists on backend
-      // If not, you can create one: router.put('/candidate/:id/status', ...)
       const response = await fetch(`${API_URL}/candidate/${candidateId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       });
-
-      if (!response.ok) {
-         // Fallback: If specific status route doesn't exist, try generic update if you have one
-         // For now, throwing error to alert dev to create the route
-        throw new Error('Failed to update status');
-      }
-
+      if (!response.ok) throw new Error('Failed to update status');
       const data = await response.json();
-      return {
-        id: candidateId,
-        status: data.status,
-      };
+      return { id: candidateId, status: data.status };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 8. AI Generate Questions (NEW)
+export const generateQuestionsWithAI = createAsyncThunk(
+  'interview/generateQuestionsWithAI',
+  async ({ topic, difficulty, questionType, count, maxScore }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/ai/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, difficulty, questionType, count, maxScore }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        const message = [errData.error, errData.solution, errData.details]
+          .filter(Boolean)
+          .join('\n\n');
+        throw new Error(message || 'AI generation failed');
+      }
+      const data = await response.json();
+      return data.questions;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -203,7 +175,9 @@ const initialState = {
   candidates: {},
   sessions: {},
   status: 'idle',
+  aiStatus: 'idle',
   error: null,
+  aiError: null,
 };
 
 const interviewSlice = createSlice({
@@ -234,21 +208,16 @@ const interviewSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+      state.aiError = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Create Question Set
       .addCase(createQuestionSetInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { interviewCode, dashboardCode, questions } = action.payload;
-        state.questionSets[interviewCode] = {
-          interviewCode,
-          dashboardCode,
-          questions,
-        };
+        state.questionSets[interviewCode] = { interviewCode, dashboardCode, questions };
       })
-      // Fetch Question Set
       .addCase(fetchQuestionSetByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const questionSet = action.payload;
@@ -260,20 +229,16 @@ const interviewSlice = createSlice({
           };
         }
       })
-      // Fetch Dashboard
       .addCase(fetchDashboardDataByCode.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { questionSet, candidates } = action.payload;
-
         state.questionSets[questionSet.interview_code] = {
           interviewCode: questionSet.interview_code,
           dashboardCode: questionSet.dashboard_code,
           questions: questionSet.questions,
         };
-
         state.candidates = {};
         candidates.forEach((candidate) => {
-          // Mapping Mongo data to State
           state.candidates[candidate.id || candidate._id] = {
             ...candidate,
             id: candidate.id || candidate._id,
@@ -281,28 +246,19 @@ const interviewSlice = createSlice({
           };
         });
       })
-      // Create Candidate
       .addCase(createCandidateInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const candidate = action.payload;
-        state.candidates[candidate.id] = {
-          ...candidate,
-          answers: [],
-          finalScore: 0,
-        };
+        state.candidates[candidate.id] = { ...candidate, answers: [], finalScore: 0 };
       })
-      // Submit Answer
       .addCase(submitAnswerInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const { candidateId, ...answerData } = action.payload;
         if (state.candidates[candidateId]) {
-          if (!state.candidates[candidateId].answers) {
-            state.candidates[candidateId].answers = [];
-          }
+          if (!state.candidates[candidateId].answers) state.candidates[candidateId].answers = [];
           state.candidates[candidateId].answers.push(answerData);
         }
       })
-      // Update Completion
       .addCase(updateCandidateOnCompletion.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
@@ -311,7 +267,6 @@ const interviewSlice = createSlice({
           state.candidates[updatedCandidate.id].finalScore = updatedCandidate.final_score;
         }
       })
-      // Update Status (Abandoned)
       .addCase(updateCandidateStatusInDB.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updatedCandidate = action.payload;
@@ -319,17 +274,27 @@ const interviewSlice = createSlice({
           state.candidates[updatedCandidate.id].status = updatedCandidate.status;
         }
       })
-
-      // Loading & Error States
+      // AI Generate
+      .addCase(generateQuestionsWithAI.pending, (state) => {
+        state.aiStatus = 'loading';
+        state.aiError = null;
+      })
+      .addCase(generateQuestionsWithAI.fulfilled, (state) => {
+        state.aiStatus = 'succeeded';
+      })
+      .addCase(generateQuestionsWithAI.rejected, (state, action) => {
+        state.aiStatus = 'failed';
+        state.aiError = action.payload;
+      })
       .addMatcher(
-        (action) => action.type.endsWith('/pending'),
+        (action) => action.type.endsWith('/pending') && !action.type.includes('generateQuestions'),
         (state) => {
           state.status = 'loading';
           state.error = null;
         }
       )
       .addMatcher(
-        (action) => action.type.endsWith('/rejected'),
+        (action) => action.type.endsWith('/rejected') && !action.type.includes('generateQuestions'),
         (state, action) => {
           state.status = 'failed';
           state.error = action.payload;
@@ -339,5 +304,4 @@ const interviewSlice = createSlice({
 });
 
 export const { createSession, updateSession, deleteSession, clearError } = interviewSlice.actions;
-
 export default interviewSlice.reducer;

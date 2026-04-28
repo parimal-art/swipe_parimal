@@ -1,3 +1,87 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    @apply border-slate-700 bg-slate-950 text-slate-100;
+  }
+
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    color: rgb(100 116 139);
+  }
+}
+
+@layer utilities {
+  html.dark .bg-white {
+    @apply bg-slate-900;
+  }
+
+  html.dark .bg-slate-50 {
+    @apply bg-slate-900;
+  }
+
+  html.dark .bg-slate-100 {
+    @apply bg-slate-800;
+  }
+
+  html.dark .bg-slate-200 {
+    @apply bg-slate-700;
+  }
+
+  html.dark .text-slate-900 {
+    @apply text-slate-50;
+  }
+
+  html.dark .text-slate-800 {
+    @apply text-slate-100;
+  }
+
+  html.dark .text-slate-700 {
+    @apply text-slate-200;
+  }
+
+  html.dark .text-slate-600 {
+    @apply text-slate-300;
+  }
+
+  html.dark .text-slate-500 {
+    @apply text-slate-400;
+  }
+
+  html.dark .border-slate-100,
+  html.dark .border-slate-200,
+  html.dark .border-slate-300 {
+    @apply border-slate-700;
+  }
+
+  html.dark .shadow-md,
+  html.dark .shadow-lg,
+  html.dark .shadow-xl,
+  html.dark .shadow-2xl {
+    box-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.8);
+  }
+
+  html.dark .hover\:bg-slate-50:hover {
+    @apply bg-slate-800;
+  }
+}

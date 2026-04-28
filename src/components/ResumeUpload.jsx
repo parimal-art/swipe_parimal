@@ -126,7 +126,7 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
             Upload Your Resume
           </h2>
           <p className="text-slate-600 mb-6">
-            Interview Code: <span className="font-mono font-semibold">{interviewCode}</span>
+            Assessment Code: <span className="font-mono font-semibold">{interviewCode}</span>
           </p>
 
           {error && (
@@ -189,7 +189,7 @@ export default function ResumeUpload({ onComplete, interviewCode }) {
                 </div>
               )}
               <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Continue to Interview
+                Continue to Assessment
               </button>
             </form>
           )}

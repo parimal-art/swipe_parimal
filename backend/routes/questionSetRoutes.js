@@ -7,7 +7,7 @@ const {
 } = require("../controllers/questionSetController");
 
 router.post("/", createQuestionSet);
-router.get("/:code", getQuestionSet);
 router.get("/dashboard/:code", getDashboardData);
+router.get("/:code", getQuestionSet);
 
 module.exports = router;

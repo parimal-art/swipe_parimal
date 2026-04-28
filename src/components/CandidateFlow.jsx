@@ -15,6 +15,7 @@ import {
 import {
   selectQuestions,
   evaluateAnswer,
+  evaluateMCQAnswer,
   calculateFinalScore,
 } from '../utils/evaluation';
 import ResumeUpload from './ResumeUpload';
@@ -46,6 +47,13 @@ export default function CandidateFlow() {
 
   const questionSet = interviewCode ? questionSets[interviewCode.toUpperCase()] : undefined;
   const candidate = candidates[candidateId];
+
+  const getQuestionTimeLimit = (question) => {
+    if (question.questionType === 'mcq') return 30;
+    if (question.difficulty === 'medium') return 180;
+    if (question.difficulty === 'hard') return 240;
+    return 120;
+  };
 
   useEffect(() => {
     if (interviewCode) {
@@ -87,7 +95,7 @@ export default function CandidateFlow() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-          <p className="text-slate-600">Verifying Interview Code...</p>
+          <p className="text-slate-600">Verifying Assessment Code...</p>
         </div>
       </div>
     );
@@ -103,10 +111,10 @@ export default function CandidateFlow() {
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-900 mb-4">
-              Invalid Interview Code
+              Invalid Assessment Code
             </h2>
             <p className="text-slate-600 mb-6">
-              {error || 'The interview code you entered is not valid. Please check and try again.'}
+              {error || 'The assessment code you entered is not valid. Please check and try again.'}
             </p>
             <button
                onClick={() => navigate('/')}
@@ -158,30 +166,28 @@ export default function CandidateFlow() {
 
   const handleAnswerSubmit = async (answer) => {
     const currentQuestion = selectedQuestions[currentQuestionIndex];
-    const evaluation = evaluateAnswer(
+    const isMCQ = currentQuestion.questionType === 'mcq';
+    const evaluation = isMCQ
+      ? evaluateMCQAnswer(answer, currentQuestion.correctAnswer, currentQuestion.maxScore)
+      : evaluateAnswer(answer, currentQuestion.keywords || [], currentQuestion.maxScore);
+    const answerRecord = {
+      questionId: currentQuestion.id,
+      questionType: currentQuestion.questionType || 'long',
       answer,
-      currentQuestion.keywords,
-      currentQuestion.maxScore
-    );
+      matchedKeywords: evaluation.matchedKeywords || [],
+      score: evaluation.score,
+      isCorrect: evaluation.isCorrect,
+    };
+
     try {
       await dispatch(
         submitAnswerInDB({
           candidateId,
-          questionId: currentQuestion.id,
-          answer,
-          matchedKeywords: evaluation.matchedKeywords,
-          score: evaluation.score,
+          ...answerRecord,
         })
       ).unwrap();
-      setCurrentEvaluation(evaluation);
-      setAllAnswers([
-        ...allAnswers,
-        {
-          questionId: currentQuestion.id,
-          answer,
-          score: evaluation.score,
-        },
-      ]);
+      setCurrentEvaluation({ ...evaluation, questionId: currentQuestion.id });
+      setAllAnswers((prev) => [...prev, answerRecord]);
       setStage('feedback');
     } catch(err) {
       console.error("Failed to submit answer:", err);
@@ -200,13 +206,16 @@ export default function CandidateFlow() {
       );
       setStage('question');
     } else {
-      const finalAnswers = [
-        ...allAnswers,
-        {
-          questionId: selectedQuestions[currentQuestionIndex].id,
-          score: currentEvaluation.score,
-        },
-      ];
+      const currentQuestionId = selectedQuestions[currentQuestionIndex].id;
+      const finalAnswers = allAnswers.some((answer) => answer.questionId === currentQuestionId)
+        ? allAnswers
+        : [
+            ...allAnswers,
+            {
+              questionId: currentQuestionId,
+              score: currentEvaluation.score,
+            },
+          ];
       const finalScore = calculateFinalScore(finalAnswers, selectedQuestions);
       
       // STEP 2: Yahan par calculated score ko naye local state mein set karein.
@@ -234,10 +243,12 @@ export default function CandidateFlow() {
   }
 
   if (stage === 'instructions') {
+    const mcqCount = questionSet.questions.filter((q) => q.questionType === 'mcq').length;
     return (
       <InterviewInstructions
         onStart={handleStartInterview}
-        questionCount={6}
+        mcqCount={mcqCount}
+        longQuestionCount={6}
       />
     );
   }
@@ -248,7 +259,7 @@ export default function CandidateFlow() {
         question={selectedQuestions[currentQuestionIndex]}
         questionNumber={currentQuestionIndex + 1}
         totalQuestions={selectedQuestions.length}
-        timeLimit={120}
+        timeLimit={getQuestionTimeLimit(selectedQuestions[currentQuestionIndex])}
         onSubmit={handleAnswerSubmit}
         onTimeExpired={handleAnswerSubmit}
       />

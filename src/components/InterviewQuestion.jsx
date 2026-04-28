@@ -12,6 +12,7 @@ export default function InterviewQuestion({
   const [answer, setAnswer] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(timeLimit);
   const [submitted, setSubmitted] = useState(false);
+  const isMCQ = question.questionType === 'mcq';
 
   useEffect(() => {
     if (submitted) return;
@@ -104,23 +105,54 @@ export default function InterviewQuestion({
             </div>
           )}
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Your Answer
-            </label>
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              disabled={submitted}
-              placeholder="Type your answer here... Be detailed and include relevant keywords."
-              rows="12"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 disabled:cursor-not-allowed resize-none"
-            />
-            <div className="flex justify-between mt-2 text-sm text-slate-500">
-              <span>{answer.trim().split(/\s+/).filter(w => w).length} words</span>
-              <span>{answer.length} characters</span>
+          {isMCQ ? (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 mb-3">
+                Choose one option
+              </label>
+              <div className="space-y-3">
+                {(question.options || []).map((option, index) => (
+                  <label
+                    key={`${option}-${index}`}
+                    className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${
+                      answer === option
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
+                    } ${submitted ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
+                  >
+                    <input
+                      type="radio"
+                      name={`question-${question.id}`}
+                      value={option}
+                      checked={answer === option}
+                      onChange={(e) => setAnswer(e.target.value)}
+                      disabled={submitted}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-slate-800">{option}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Your Answer
+              </label>
+              <textarea
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                disabled={submitted}
+                placeholder="Type your answer here... Be detailed and include relevant keywords."
+                rows="12"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 disabled:cursor-not-allowed resize-none"
+              />
+              <div className="flex justify-between mt-2 text-sm text-slate-500">
+                <span>{answer.trim().split(/\s+/).filter(w => w).length} words</span>
+                <span>{answer.length} characters</span>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4">
             <button

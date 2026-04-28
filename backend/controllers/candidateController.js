@@ -11,16 +11,25 @@ exports.createCandidate = async (req, res) => {
   }
 };
 
-// Push Answer
+// Push Answer (supports both long and MCQ)
 exports.submitAnswer = async (req, res) => {
   const { candidateId, ...answerData } = req.body;
 
   try {
-    await Candidate.findByIdAndUpdate(
+    if (!candidateId) {
+      return res.status(400).json({ error: "candidateId is required" });
+    }
+
+    const candidate = await Candidate.findByIdAndUpdate(
       candidateId,
       { $push: { answers: answerData } },
       { new: true }
     );
+
+    if (!candidate) {
+      return res.status(404).json({ error: "Candidate not found" });
+    }
+
     res.json(answerData);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -35,7 +44,6 @@ exports.completeCandidate = async (req, res) => {
       { finalScore: req.body.score, status: "completed" },
       { new: true }
     );
-
     res.json(candidate);
   } catch (err) {
     res.status(500).json({ error: err.message });

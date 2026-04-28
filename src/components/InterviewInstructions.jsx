@@ -1,12 +1,14 @@
 import { Clock, AlertTriangle, CheckCircle2, BookOpen } from 'lucide-react';
 
-export default function InterviewInstructions({ onStart, questionCount = 6 }) {
+export default function InterviewInstructions({ onStart, mcqCount = 0, longQuestionCount = 6 }) {
+  const totalQuestions = mcqCount + longQuestionCount;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">
-            Interview Instructions
+            Assessment Instructions
           </h2>
 
           <div className="space-y-6 mb-8">
@@ -19,7 +21,7 @@ export default function InterviewInstructions({ onStart, questionCount = 6 }) {
                   Question Format
                 </h3>
                 <p className="text-slate-600">
-                  You will be asked <strong>{questionCount} questions</strong> total: 2 easy, 2 medium, and 2 hard questions. Each question tests different aspects of your knowledge and skills.
+                  You will be asked <strong>{totalQuestions} questions</strong> total: <strong>{mcqCount} MCQ</strong> question{mcqCount === 1 ? '' : 's'} first, then <strong>{longQuestionCount} long-answer</strong> questions: 2 easy, 2 medium, and 2 hard.
                 </p>
               </div>
             </div>
@@ -33,7 +35,7 @@ export default function InterviewInstructions({ onStart, questionCount = 6 }) {
                   Time Limit
                 </h3>
                 <p className="text-slate-600">
-                  Each question has a timer. You must answer within the allotted time. If time expires, your answer will be automatically submitted (even if empty).
+                  MCQs have 30 seconds. Long-answer questions have 2 minutes for easy, 3 minutes for medium, and 4 minutes for hard.
                 </p>
               </div>
             </div>
@@ -47,7 +49,7 @@ export default function InterviewInstructions({ onStart, questionCount = 6 }) {
                   Scoring System
                 </h3>
                 <p className="text-slate-600">
-                  Your answers are evaluated based on keyword matching and completeness. Longer, detailed answers (20+ words) may receive bonus points. Final score is weighted: Easy (1x), Medium (2x), Hard (3x).
+                  MCQs are scored as full marks for correct answers and 0 for wrong answers. Long answers are scored by keyword matching. Final score is weighted: Easy (1x), Medium (2x), Hard (3x).
                 </p>
               </div>
             </div>
@@ -61,8 +63,8 @@ export default function InterviewInstructions({ onStart, questionCount = 6 }) {
                   Important Rules
                 </h3>
                 <ul className="text-slate-600 space-y-1 list-disc list-inside">
-                  <li>Do not close or switch browser tabs during the interview</li>
-                  <li>If you leave the interview screen, your session will be terminated</li>
+                  <li>Do not close or switch browser tabs during the assessment</li>
+                  <li>If you leave the assessment screen, your session will be terminated</li>
                   <li>Once submitted, you cannot change your answer</li>
                   <li>Each question must be answered in sequence</li>
                 </ul>
@@ -88,7 +90,7 @@ export default function InterviewInstructions({ onStart, questionCount = 6 }) {
               onClick={onStart}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors text-lg"
             >
-              I Understand, Start Interview
+              I Understand, Start Assessment
             </button>
           </div>
         </div>
